@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "CBC",
+    "price": 500
+  },
+  {
+    "id": 2,
+    "name": "Blood Sugar",
+    "price": 300
+  },
+  {
+    "id": 3,
+    "name": "ECG",
+    "price": 1000
+  },
+  {
+    "id": 4,
+    "name": "MRI",
+    "price": 5000
+  },
+  {
+    "id": 5,
+    "name": "X-Ray",
+    "price": 1200
+  },
+  {
+    "id": 6,
+    "name": "Urine Test",
+    "price": 400
+  },
+  {
+    "id": 7,
+    "name": "CT Scan",
+    "price": 4500
+  },
+  {
+    "id": 8,
+    "name": "Thyroid Test",
+    "price": 1500
+  }
+]
