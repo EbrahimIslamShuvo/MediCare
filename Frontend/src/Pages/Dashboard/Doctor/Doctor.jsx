@@ -4,67 +4,153 @@ import React, {
 } from "react";
 
 import {
-    Link,
-} from "react-router-dom";
-
-import {
-    Stethoscope,
-    Search,
     CalendarDays,
     Clock3,
-    Building2,
+    Users,
+    FileText,
+    FlaskConical,
+    Activity,
+    CheckCircle2,
+    XCircle,
 } from "lucide-react";
 
 const Doctor = () => {
+
+    // =====================================
+    // USER
+    // =====================================
+
+    const currentUser =
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            ) || "{}"
+        );
+
     // =====================================
     // STATES
     // =====================================
 
-    const [doctors, setDoctors] =
+    const [appointments, setAppointments] =
         useState([]);
+
+    const [prescriptions, setPrescriptions] =
+        useState([]);
+
+    const [labReports, setLabReports] =
+        useState([]);
+
+    const [doctor, setDoctor] =
+        useState(null);
 
     const [loading, setLoading] =
         useState(true);
 
-    const [search, setSearch] =
-        useState("");
-
-    const [department, setDepartment] =
-        useState("");
-
     // =====================================
-    // FETCH DOCTORS
+    // FETCH DATA
     // =====================================
 
     useEffect(() => {
-        fetchDoctors();
+
+        fetchDoctorDashboard();
+
     }, []);
 
-    const fetchDoctors =
+    const fetchDoctorDashboard =
         async () => {
+
             try {
-                const response =
+
+                // DOCTOR
+
+                const doctorRes =
                     await fetch(
                         "http://127.0.0.1:3000/api/v1/doctors"
                     );
 
-                const result =
-                    await response.json();
+                const doctorData =
+                    await doctorRes.json();
+
+                const myDoctor =
+                    doctorData?.data?.find(
+                        (item) =>
+                            String(
+                                item?.user?._id
+                            ) ===
+                            String(
+                                currentUser?._id
+                            )
+                    );
+
+                setDoctor(
+                    myDoctor
+                );
+
+                // APPOINTMENTS
+
+                const appointmentRes =
+                    await fetch(
+                        `http://127.0.0.1:3000/api/v1/appointments/doctor/${currentUser?._id}`
+                    );
+
+                const appointmentData =
+                    await appointmentRes.json();
 
                 if (
-                    result.success
+                    appointmentData.success
                 ) {
-                    setDoctors(
-                        result.data
+
+                    setAppointments(
+                        appointmentData.data
                     );
                 }
-            } catch (
-                error
-            ) {
+
+                // PRESCRIPTIONS
+
+                const prescriptionRes =
+                    await fetch(
+                        `http://127.0.0.1:3000/api/v1/prescriptions/doctor/${currentUser?._id}`
+                    );
+
+                const prescriptionData =
+                    await prescriptionRes.json();
+
+                if (
+                    prescriptionData.success
+                ) {
+
+                    setPrescriptions(
+                        prescriptionData.data
+                    );
+                }
+
+                // LAB REPORTS
+
+                const labRes =
+                    await fetch(
+                        `http://127.0.0.1:3000/api/v1/lab-tests/doctor/${currentUser?._id}`
+                    );
+
+                const labData =
+                    await labRes.json();
+
+                if (
+                    labData.success
+                ) {
+
+                    setLabReports(
+                        labData.data
+                    );
+                }
+
+            } catch (error) {
+
                 console.log(
                     error
                 );
+
             } finally {
+
                 setLoading(
                     false
                 );
@@ -72,364 +158,256 @@ const Doctor = () => {
         };
 
     // =====================================
-    // FILTER
+    // STATS
     // =====================================
 
-    const filteredDoctors =
-        doctors.filter(
-            (doctor) => {
-                const matchSearch =
-                    doctor?.user?.name
-                        ?.toLowerCase()
-                        .includes(
-                            search.toLowerCase()
-                        ) ||
-                    doctor?.specialization
-                        ?.toLowerCase()
-                        .includes(
-                            search.toLowerCase()
-                        );
+    const totalAppointments =
+        appointments.length;
 
-                const matchDepartment =
-                    department
-                        ? doctor?.department ===
-                          department
-                        : true;
+    const completedAppointments =
+        appointments.filter(
+            (item) =>
+                item?.status ===
+                "Completed"
+        ).length;
 
-                return (
-                    matchSearch &&
-                    matchDepartment
-                );
-            }
-        );
 
-    // =====================================
-    // UNIQUE DEPARTMENTS
-    // =====================================
-
-    const departments =
+    const totalPatients =
         [
             ...new Set(
-                doctors.map(
-                    (
-                        item
-                    ) =>
-                        item.department
+                appointments.map(
+                    (item) =>
+                        item?.patient?._id
                 )
             ),
-        ];
+        ].length;
+
+    // =====================================
+    // LOADING
+    // =====================================
+
+    if (loading) {
+
+        return (
+            <div className="h-screen flex items-center justify-center text-3xl font-black text-blue-600">
+                Loading...
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-[#f5f9ff]">
+        <div className="min-h-screen bg-[#f4f9ff] p-6">
 
-            {/* ================================= */}
-            {/* HERO */}
-            {/* ================================= */}
+            <div className="max-w-7xl mx-auto">
 
-            <div className="relative h-[420px] overflow-hidden">
+                {/* ================================= */}
+                {/* HEADER */}
+                {/* ================================= */}
 
-                <img
-                    src="https://images.unsplash.com/photo-1612277795421-9bc7706a4a41?q=80&w=2070&auto=format&fit=crop"
-                    alt="doctor"
-                    className="w-full h-full object-cover"
-                />
+                <div className="mb-10">
 
-                <div className="absolute inset-0 bg-black/60"></div>
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-
-                    <p className="uppercase tracking-[6px] text-blue-300 font-black mb-5">
-                        Our Specialists
+                    <p className="uppercase tracking-[6px] text-blue-600 font-black mb-3">
+                        Doctor Dashboard
                     </p>
 
-                    <h1 className="text-5xl md:text-7xl font-black text-white leading-tight max-w-5xl">
-                        Meet Our
-                        Experienced
-                        Doctors
+                    <h1 className="text-5xl font-black text-slate-800 leading-tight">
+                        Welcome Back,
+                        <br />
+                        Dr. {
+                            doctor?.user?.name
+                        }
                     </h1>
-
-                    <p className="text-slate-200 text-lg mt-6 max-w-2xl leading-relaxed">
-                        Book appointments
-                        with expert doctors
-                        from different
-                        medical departments.
-                    </p>
                 </div>
-            </div>
 
-            {/* ================================= */}
-            {/* FILTER */}
-            {/* ================================= */}
+                {/* ================================= */}
+                {/* STATS */}
+                {/* ================================= */}
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-0 -mt-16 relative z-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
 
-                <div className="bg-white rounded-[35px] shadow-2xl p-6 border border-blue-100">
+                    <StatCard
+                        icon={
+                            <CalendarDays size={32} />
+                        }
+                        title="Appointments"
+                        value={
+                            totalAppointments
+                        }
+                        bg="bg-blue-600"
+                    />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <StatCard
+                        icon={
+                            <Users size={32} />
+                        }
+                        title="Patients"
+                        value={
+                            totalPatients
+                        }
+                        bg="bg-green-600"
+                    />
 
-                        {/* SEARCH */}
+                    <StatCard
+                        icon={
+                            <CheckCircle2 size={32} />
+                        }
+                        title="Completed"
+                        value={
+                            completedAppointments
+                        }
+                        bg="bg-purple-600"
+                    />
 
-                        <div className="relative">
+                </div>
 
-                            <Search
-                                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
-                                size={20}
-                            />
+                {/* ================================= */}
+                {/* PROFILE */}
+                {/* ================================= */}
 
-                            <input
-                                type="text"
-                                placeholder="Search doctor or specialization..."
-                                value={
-                                    search
-                                }
-                                onChange={(
-                                    e
-                                ) =>
-                                    setSearch(
-                                        e
-                                            .target
-                                            .value
-                                    )
-                                }
-                                className="w-full h-14 pl-14 pr-5 rounded-2xl border border-blue-100 outline-none focus:border-blue-500"
-                            />
+                <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm mb-10">
+
+                    <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
+
+                        {/* IMAGE */}
+
+                        <div className="w-72 h-72 rounded-[35px] overflow-hidden bg-blue-100">
+
+                            {doctor?.image ? (
+
+                                <img
+                                    src={`http://127.0.0.1:3000${doctor?.image}`}
+                                    alt="doctor"
+                                    className="w-full h-full object-cover"
+                                />
+
+                            ) : (
+
+                                <div className="w-full h-full flex items-center justify-center text-blue-600 text-7xl font-black">
+                                    {
+                                        doctor?.user?.name?.[0]
+                                    }
+                                </div>
+                            )}
                         </div>
 
-                        {/* DEPARTMENT */}
+                        {/* INFO */}
 
-                        <select
-                            value={
-                                department
-                            }
-                            onChange={(
-                                e
-                            ) =>
-                                setDepartment(
-                                    e
-                                        .target
-                                        .value
-                                )
-                            }
-                            className="w-full h-14 px-5 rounded-2xl border border-blue-100 outline-none focus:border-blue-500"
-                        >
-                            <option value="">
-                                All Departments
-                            </option>
+                        <div className="flex-1">
 
-                            {departments.map(
-                                (
-                                    dept,
-                                    index
-                                ) => (
-                                    <option
-                                        key={
-                                            index
-                                        }
-                                        value={
-                                            dept
-                                        }
-                                    >
-                                        {
-                                            dept
-                                        }
-                                    </option>
-                                )
-                            )}
-                        </select>
-                    </div>
-                </div>
-            </div>
+                            <h2 className="text-4xl font-black text-slate-800 mb-3">
+                                Dr. {
+                                    doctor?.user?.name
+                                }
+                            </h2>
 
-            {/* ================================= */}
-            {/* DOCTOR LIST */}
-            {/* ================================= */}
+                            <p className="text-blue-600 font-bold text-xl mb-6">
+                                {
+                                    doctor?.specialization
+                                }
+                            </p>
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-0 py-24">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                {/* TITLE */}
-
-                <div className="text-center mb-16">
-
-                    <p className="uppercase tracking-[6px] text-blue-600 font-black mb-4">
-                        Specialists
-                    </p>
-
-                    <h2 className="text-5xl font-black text-slate-800">
-                        Our Medical Team
-                    </h2>
-                </div>
-
-                {/* LOADING */}
-
-                {loading ? (
-                    <div className="text-center text-3xl font-black text-blue-600 py-24">
-                        Loading...
-                    </div>
-                ) : filteredDoctors.length ===
-                  0 ? (
-                    <div className="text-center text-2xl font-bold text-slate-500 py-24">
-                        No Doctor Found
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
-
-                        {filteredDoctors.map(
-                            (
-                                doctor
-                            ) => (
-                                <div
-                                    key={
-                                        doctor._id
+                                <InfoBox
+                                    title="Department"
+                                    value={
+                                        doctor?.department
                                     }
-                                    className="bg-white rounded-[35px] overflow-hidden border border-blue-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition duration-500"
-                                >
+                                />
 
-                                    {/* IMAGE */}
+                                <InfoBox
+                                    title="Experience"
+                                    value={`${doctor?.experience} Years`}
+                                />
 
-                                    <div className="h-[350px] overflow-hidden relative">
+                                <InfoBox
+                                    title="Consultation Fee"
+                                    value={`৳ ${doctor?.consultationFee}`}
+                                />
 
-                                        {doctor?.image ? (
-                                            <img
-                                                src={`http://127.0.0.1:3000${doctor.image}`}
-                                                alt={
-                                                    doctor
-                                                        ?.user
-                                                        ?.name
-                                                }
-                                                className="w-full h-full object-cover hover:scale-110 transition duration-700"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-blue-100 flex items-center justify-center text-blue-600 text-7xl font-black">
-                                                {
-                                                    doctor
-                                                        ?.user
-                                                        ?.name?.[0]
-                                                }
-                                            </div>
-                                        )}
+                                <InfoBox
+                                    title="Status"
+                                    value={
+                                        doctor?.status
+                                    }
+                                />
 
-                                        {/* STATUS */}
+                                <InfoBox
+                                    title="Available Time"
+                                    value={`${doctor?.startTime} - ${doctor?.endTime}`}
+                                />
 
-                                        <div className="absolute top-5 right-5">
-
-                                            <span className={`px-4 py-2 rounded-full text-sm font-black shadow-lg ${
-                                                doctor?.status ===
-                                                "Available"
-                                                    ? "bg-green-500 text-white"
-                                                    : doctor?.status ===
-                                                      "On Leave"
-                                                    ? "bg-orange-500 text-white"
-                                                    : "bg-red-500 text-white"
-                                            }`}>
-                                                {
-                                                    doctor?.status
-                                                }
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* CONTENT */}
-
-                                    <div className="p-8">
-
-                                        {/* NAME */}
-
-                                        <h2 className="text-3xl font-black text-slate-800 mb-2">
-                                            Dr.{" "}
-                                            {
-                                                doctor
-                                                    ?.user
-                                                    ?.name
-                                            }
-                                        </h2>
-
-                                        {/* SPECIALIZATION */}
-
-                                        <div className="flex items-center gap-2 text-blue-600 font-semibold mb-5">
-
-                                            <Stethoscope
-                                                size={
-                                                    18
-                                                }
-                                            />
-
-                                            <span>
-                                                {
-                                                    doctor?.specialization
-                                                }
-                                            </span>
-                                        </div>
-
-                                        {/* INFO */}
-
-                                        <div className="space-y-4 mb-7">
-
-                                            <div className="flex items-center gap-3 text-slate-600">
-
-                                                <Building2
-                                                    size={
-                                                        18
-                                                    }
-                                                />
-
-                                                <span className="font-medium">
-                                                    {
-                                                        doctor?.department
-                                                    }
-                                                </span>
-                                            </div>
-
-                                            <div className="flex items-center gap-3 text-slate-600">
-
-                                                <CalendarDays
-                                                    size={
-                                                        18
-                                                    }
-                                                />
-
-                                                <span className="font-medium">
-                                                    {doctor?.availableDays?.join(
-                                                        ", "
-                                                    )}
-                                                </span>
-                                            </div>
-
-                                            <div className="flex items-center gap-3 text-slate-600">
-
-                                                <Clock3
-                                                    size={
-                                                        18
-                                                    }
-                                                />
-
-                                                <span className="font-medium">
-                                                    {
-                                                        doctor?.startTime
-                                                    }{" "}
-                                                    -
-                                                    {" "}
-                                                    {
-                                                        doctor?.endTime
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* BUTTON */}
-
-                                        <Link
-                                            to={`/doctor/${doctor?._id}`}
-                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-14 rounded-2xl flex items-center justify-center font-black transition duration-300"
-                                        >
-                                            View Profile
-                                        </Link>
-                                    </div>
-                                </div>
-                            )
-                        )}
+                                <InfoBox
+                                    title="Available Days"
+                                    value={
+                                        doctor?.availableDays?.join(
+                                            ", "
+                                        )
+                                    }
+                                />
+                            </div>
+                        </div>
                     </div>
-                )}
+                </div>
+
             </div>
+        </div>
+    );
+};
+
+// =====================================
+// STAT CARD
+// =====================================
+
+const StatCard = ({
+    icon,
+    title,
+    value,
+    bg,
+}) => {
+
+    return (
+        <div className={`${bg} rounded-[35px] p-8 text-white shadow-lg`}>
+
+            <div className="flex items-center justify-between mb-8">
+
+                <div className="w-16 h-16 rounded-3xl bg-white/20 flex items-center justify-center">
+                    {icon}
+                </div>
+
+                <Activity />
+            </div>
+
+            <h2 className="text-5xl font-black mb-3">
+                {value}
+            </h2>
+
+            <p className="text-lg font-semibold text-white/90">
+                {title}
+            </p>
+        </div>
+    );
+};
+
+// =====================================
+// INFO BOX
+// =====================================
+
+const InfoBox = ({
+    title,
+    value,
+}) => {
+
+    return (
+        <div className="bg-blue-50 border border-blue-100 rounded-3xl p-5">
+
+            <p className="text-slate-500 font-semibold mb-2">
+                {title}
+            </p>
+
+            <h3 className="text-xl font-black text-slate-800">
+                {value || "N/A"}
+            </h3>
         </div>
     );
 };
