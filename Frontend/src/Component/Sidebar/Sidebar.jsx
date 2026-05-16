@@ -149,14 +149,6 @@ const Sidebar = ({
       },
 
       {
-        name:
-          "Medical Records",
-        icon: FolderHeart,
-        path:
-          "/dashboard/patient/medical-records",
-      },
-
-      {
         name: "Lab Reports",
         icon: FlaskConical,
         path:
@@ -359,28 +351,28 @@ const Sidebar = ({
         name: "Patients",
         icon: HeartPulse,
         path:
-          "/dashboard/patients",
+          "/dashboard/receptionist/patients",
       },
 
       {
         name: "Doctors",
         icon: Stethoscope,
         path:
-          "/dashboard/doctors",
+          "/dashboard/receptionist/doctors",
       },
 
       {
         name: "Bills",
         icon: Receipt,
         path:
-          "/dashboard/bills",
+          "/dashboard/receptionist/bills",
       },
 
       {
         name: "Appointments",
         icon: CalendarCheck,
         path:
-          "/dashboard/appointments",
+          "/dashboard/receptionist/appointments",
       },
 
       {
@@ -388,28 +380,28 @@ const Sidebar = ({
           "Beds & Wards",
         icon: BedDouble,
         path:
-          "/dashboard/beds",
+          "/dashboard/receptionist/beds",
       },
 
       {
         name: "Ambulance",
         icon: Ambulance,
         path:
-          "/dashboard/ambulance",
+          "/dashboard/receptionist/ambulance",
       },
 
       {
         name: "Laboratory",
         icon: FlaskConical,
         path:
-          "/dashboard/lab",
+          "/dashboard/receptionist/lab",
       },
 
       {
         name: "Profile",
         icon: UserRound,
         path:
-          "/dashboard/profile",
+          "/dashboard/receptionist/profile",
       },
     ],
   };

@@ -128,6 +128,22 @@ const updateReceptionist =
     return result;
   };
 
+  // GET RECEPTIONIST BY USER ID
+
+const getReceptionistByUserId =
+  async (
+    userId: string
+  ) => {
+    const result =
+      await Receptionist.findOne(
+        {
+          user: userId,
+        }
+      ).populate("user");
+
+    return result;
+  };
+
 export const ReceptionistServices =
   {
     createReceptionist,
@@ -137,4 +153,6 @@ export const ReceptionistServices =
     getSingleReceptionist,
 
     updateReceptionist,
+
+    getReceptionistByUserId
   };

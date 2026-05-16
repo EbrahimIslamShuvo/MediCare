@@ -1,24 +1,22 @@
-// ======================================
-// receptionist.controller.ts
-// ======================================
-
 import type {
   Request,
   Response,
 } from "express";
 
-import { ReceptionistServices } from "./receptionist.service";
+import { AmbulanceRequestServices } from "./ambulanceRequest.service";
 
-// CREATE RECEPTIONIST
+// ======================================
+// CREATE REQUEST
+// ======================================
 
-const createReceptionist =
+const createRequest =
   async (
     req: Request,
     res: Response
   ) => {
     try {
       const result =
-        await ReceptionistServices.createReceptionist(
+        await AmbulanceRequestServices.createRequest(
           req.body
         );
 
@@ -26,7 +24,7 @@ const createReceptionist =
         success: true,
 
         message:
-          "Receptionist created successfully",
+          "Ambulance request created successfully",
 
         data: result,
       });
@@ -40,16 +38,18 @@ const createReceptionist =
     }
   };
 
-// GET ALL RECEPTIONISTS
+// ======================================
+// GET ALL REQUESTS
+// ======================================
 
-const getAllReceptionists =
+const getAllRequests =
   async (
     req: Request,
     res: Response
   ) => {
     try {
       const result =
-        await ReceptionistServices.getAllReceptionists();
+        await AmbulanceRequestServices.getAllRequests();
 
       res.status(200).json({
         success: true,
@@ -66,57 +66,28 @@ const getAllReceptionists =
     }
   };
 
-// GET SINGLE RECEPTIONIST
+// ======================================
+// ASSIGN AMBULANCE
+// ======================================
 
-const getSingleReceptionist =
+const assignAmbulance =
   async (
     req: Request,
     res: Response
   ) => {
     try {
-      const { id } = req.params;
-
       const result =
-        await ReceptionistServices.getSingleReceptionist(
-          id as string
-        );
+        await AmbulanceRequestServices.assignAmbulance(
+          req.params.id as string,
 
-      res.status(200).json({
-        success: true,
-
-        data: result,
-      });
-    } catch (error: any) {
-      res.status(400).json({
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-// UPDATE RECEPTIONIST
-
-const updateReceptionist =
-  async (
-    req: Request,
-    res: Response
-  ) => {
-    try {
-      const { id } = req.params;
-
-      const result =
-        await ReceptionistServices.updateReceptionist(
-          id as string,
-          req.body
+          req.body.ambulanceId
         );
 
       res.status(200).json({
         success: true,
 
         message:
-          "Receptionist updated successfully",
+          "Ambulance assigned successfully",
 
         data: result,
       });
@@ -130,16 +101,51 @@ const updateReceptionist =
     }
   };
 
-  // GET RECEPTIONIST BY USER ID
+// ======================================
+// COMPLETE REQUEST
+// ======================================
 
-const getReceptionistByUserId =
+const completeRequest =
   async (
     req: Request,
     res: Response
   ) => {
     try {
       const result =
-        await ReceptionistServices.getReceptionistByUserId(
+        await AmbulanceRequestServices.completeRequest(
+          req.params.id as string
+        );
+
+      res.status(200).json({
+        success: true,
+
+        message:
+          "Request completed successfully",
+
+        data: result,
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };
+
+  // ======================================
+// GET PATIENT REQUESTS
+// ======================================
+
+const getPatientRequests =
+  async (
+    req: Request,
+    res: Response
+  ) => {
+    try {
+      const result =
+        await AmbulanceRequestServices.getPatientRequests(
           req.params.userId as string
         );
 
@@ -158,15 +164,15 @@ const getReceptionistByUserId =
     }
   };
 
-export const ReceptionistControllers =
+export const AmbulanceRequestControllers =
   {
-    createReceptionist,
+    createRequest,
 
-    getAllReceptionists,
+    getAllRequests,
 
-    getSingleReceptionist,
+    assignAmbulance,
 
-    updateReceptionist,
+    completeRequest,
 
-    getReceptionistByUserId,
+    getPatientRequests,
   };

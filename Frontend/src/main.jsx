@@ -56,12 +56,10 @@ import BedWords from "./Pages/Dashboard/Admin/Pages/BedWords";
 import Laboratory from "./Pages/Dashboard/Admin/Pages/Laboratory";
 import Billing from "./Pages/Dashboard/Admin/Pages/Billing";
 import Ambulancee from "./Pages/Dashboard/Admin/Pages/Ambulancee";
-import Inventory from "./Pages/Dashboard/Admin/Pages/Inventory";
 import Reports from "./Pages/Dashboard/Admin/Pages/Reports";
 import Profile from "./Pages/Dashboard/Admin/Pages/Profile";
 import Doctors from "./Pages/Dashboard/Patient/Pages/Doctors";
 import AppointmentsPatients from "./Pages/Dashboard/Patient/Pages/AppointmentsPatients";
-import MedicalReports from "./Pages/Dashboard/Patient/Pages/MedicalReports";
 import LabReports from "./Pages/Dashboard/Patient/Pages/LabReports";
 import Prescrption from "./Pages/Dashboard/Patient/Pages/Prescrption";
 import BillPayment from "./Pages/Dashboard/Patient/Pages/BillPayment";
@@ -79,7 +77,16 @@ import DoctorSingle from "./Pages/Website/Doctor/DoctorSingle";
 import LabrotoristProfile from "./Pages/Dashboard/Laboratorist/Pages/LabrotoristProfile";
 import ReportHistory from "./Pages/Dashboard/Laboratorist/Pages/ReportHistory";
 import TestRequestion from "./Pages/Dashboard/Laboratorist/Pages/TestRequestion";
- 
+import PatientsRecptionist from "./Pages/Dashboard/Receptionist/Pages/PatientsRecptionist";
+import DoctorsReceptionist from "./Pages/Dashboard/Receptionist/Pages/DoctorsReceptionist";
+import BillsReceptionist from "./Pages/Dashboard/Receptionist/Pages/BillsReceptionist";
+import AppointmentReceptionist from "./Pages/Dashboard/Receptionist/Pages/AppointmentReceptionist";
+import BedWordReceptionist from "./Pages/Dashboard/Receptionist/Pages/BedWordReceptionist";
+import AmbulanceReceptionist from "./Pages/Dashboard/Receptionist/Pages/AmbulanceReceptionist";
+import LaboratoryReceptionist from "./Pages/Dashboard/Receptionist/Pages/LaboratoryReceptionist";
+import ProfileReceptionist from "./Pages/Dashboard/Receptionist/Pages/ProfileReceptionist";
+import Service from "./Pages/Website/Service/Service";
+
 // =====================================
 // ROUTER
 // =====================================
@@ -100,6 +107,11 @@ const router =
           path: "/",
 
           element: <Home />,
+        },
+        {
+          path: "/services",
+
+          element: <Service />,
         },
         {
           path: "/doctor",
@@ -225,15 +237,6 @@ const router =
           ),
         },
         {
-          path: "inventory",
-
-          element: (
-            <AdminRoute>
-              <Inventory/>
-            </AdminRoute>
-          ),
-        },
-        {
           path: "reports",
 
           element: (
@@ -352,15 +355,6 @@ const router =
           ),
         },
         {
-          path: "patient/medical-records",
-
-          element: (
-            <PatientRoute>
-              <MedicalReports />
-            </PatientRoute>
-          ),
-        },
-        {
           path: "patient/lab-reports",
 
           element: (
@@ -431,6 +425,86 @@ const router =
           element: (
             <ReceptionistRoute>
               <Receptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/patients",
+
+          element: (
+            <ReceptionistRoute>
+              <PatientsRecptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/doctors",
+
+          element: (
+            <ReceptionistRoute>
+              <DoctorsReceptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/bills",
+
+          element: (
+            <ReceptionistRoute>
+              <BillsReceptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/appointments",
+
+          element: (
+            <ReceptionistRoute>
+              <AppointmentReceptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/beds",
+
+          element: (
+            <ReceptionistRoute>
+              <BedWordReceptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/ambulance",
+
+          element: (
+            <ReceptionistRoute>
+              <AmbulanceReceptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/lab",
+
+          element: (
+            <ReceptionistRoute>
+              <LaboratoryReceptionist />
+            </ReceptionistRoute>
+          ),
+        },
+        {
+          path:
+            "receptionist/profile",
+
+          element: (
+            <ReceptionistRoute>
+              <ProfileReceptionist />
             </ReceptionistRoute>
           ),
         },

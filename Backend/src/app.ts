@@ -15,6 +15,8 @@ import { PaymentRoutes } from "./module/Payment/payment.route";
 import { PrescriptionRoutes } from "./module/Prescription/prescription.route";
 import { LabTestRoutes } from "./module/LabTest/labTest.route";
 import { LaboratoryRoutes } from "./module/Labtatory/laboratory.route";
+import { AmbulanceRoutes } from "./module/Ambulance/ambulance.route";
+import { AmbulanceRequestRoutes } from "./module/AmbulanceRequest/ambulanceRequest.route";
 
 
 const app = express();
@@ -108,6 +110,16 @@ app.use(
 app.use(
   "/api/v1/laboratories",
   LaboratoryRoutes
+);
+
+app.use(
+  "/api/v1/ambulances",
+  AmbulanceRoutes
+);
+
+app.use(
+  "/api/v1/ambulance-requests",
+  AmbulanceRequestRoutes
 );
 
 // TEST

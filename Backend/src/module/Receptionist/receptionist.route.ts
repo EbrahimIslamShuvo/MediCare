@@ -16,21 +16,20 @@ router.post(
   ReceptionistControllers.createReceptionist
 );
 
-// GET ALL RECEPTIONISTS
-
 router.get(
   "/",
   ReceptionistControllers.getAllReceptionists
 );
 
-// GET SINGLE RECEPTIONIST
+router.get(
+  "/user/:userId",
+  ReceptionistControllers.getReceptionistByUserId
+);
 
 router.get(
   "/:id",
   ReceptionistControllers.getSingleReceptionist
 );
-
-// UPDATE RECEPTIONIST
 
 router.patch(
   "/:id",

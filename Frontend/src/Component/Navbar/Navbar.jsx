@@ -283,29 +283,6 @@ const Navbar = () => {
 
               {profileDropdown && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
-                  {/* TOP */}
-
-                  <div className="p-5 border-b border-slate-100 flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold uppercase">
-                      {
-                        user?.name?.[0]
-                      }
-                    </div>
-
-                    <div>
-                      <h4 className="font-bold text-slate-800">
-                        {
-                          user?.name
-                        }
-                      </h4>
-
-                      <p className="text-sm text-slate-500">
-                        {
-                          user?.email
-                        }
-                      </p>
-                    </div>
-                  </div>
 
                   {/* MENU */}
 
@@ -441,11 +418,6 @@ const Navbar = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-slate-800">
-                      {
-                        user?.name
-                      }
-                    </h4>
 
                     <p className="text-sm text-slate-500">
                       {
