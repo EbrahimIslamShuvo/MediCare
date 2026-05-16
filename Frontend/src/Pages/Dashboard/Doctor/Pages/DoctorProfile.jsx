@@ -27,7 +27,7 @@ const DoctorProfile = () => {
     JSON.parse(
       localStorage.getItem(
         "user"
-      )
+      ) || "{}"
     );
 
   // =====================================
@@ -49,37 +49,25 @@ const DoctorProfile = () => {
   const [formData, setFormData] =
     useState({
       name: "",
-
       email: "",
-
       phone: "",
-
       specialization: "",
-
       department: "",
-
       experience: "",
-
       consultationFee: "",
-
       startTime: "",
-
       endTime: "",
-
       availableDays: [],
-
       qualifications: [
         {
           degree: "",
-
           institute: "",
-
           country: "",
         },
       ],
-
       bio: "",
-
+      status:
+        "Available",
       image: null,
     });
 
@@ -220,10 +208,8 @@ const DoctorProfile = () => {
                       {
                         degree:
                           "",
-
                         institute:
                           "",
-
                         country:
                           "",
                       },
@@ -232,6 +218,10 @@ const DoctorProfile = () => {
               bio:
                 myDoctor.bio ||
                 "",
+
+              status:
+                myDoctor.status ||
+                "Available",
 
               image: null,
             });
@@ -339,9 +329,8 @@ const DoctorProfile = () => {
 
           {
             degree: "",
-
-            institute: "",
-
+            institute:
+              "",
             country: "",
           },
         ],
@@ -403,6 +392,13 @@ const DoctorProfile = () => {
   const handleUpdate =
     async () => {
       try {
+
+        if (
+          !doctor?._id
+        ) {
+          return;
+        }
+
         const doctorData =
           new FormData();
 
@@ -451,7 +447,7 @@ const DoctorProfile = () => {
 
         const response =
           await fetch(
-            `http://127.0.0.1:3000/api/v1/doctors/${doctor?._id}`,
+            `http://127.0.0.1:3000/api/v1/doctors/${doctor._id}`,
             {
               method: "PATCH",
 
@@ -487,11 +483,13 @@ const DoctorProfile = () => {
   return (
     <div className="min-h-screen bg-blue-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+
         {/* ================================= */}
         {/* PART-1 */}
         {/* ================================= */}
 
         <div className="bg-white rounded-[35px] border border-blue-100 p-10 shadow-sm flex flex-col items-center text-center relative">
+
           {/* EDIT */}
 
           <button
@@ -523,7 +521,8 @@ const DoctorProfile = () => {
             {imagePreview ? (
               <img
                 src={
-                  imagePreview
+                  imagePreview ||
+                  "https://i.ibb.co/4pDNDk1/avatar.png"
                 }
                 alt="doctor"
                 className="w-full h-full object-cover"
@@ -551,8 +550,8 @@ const DoctorProfile = () => {
         {/* ================================= */}
 
         <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
+
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {/* EMAIL */}
 
             <InfoCard
               icon={
@@ -570,18 +569,16 @@ const DoctorProfile = () => {
                   onChange={
                     handleChange
                   }
-                  className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                  className="input"
                 />
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   {
                     formData.email
                   }
                 </p>
               )}
             </InfoCard>
-
-            {/* PHONE */}
 
             <InfoCard
               icon={
@@ -599,18 +596,16 @@ const DoctorProfile = () => {
                   onChange={
                     handleChange
                   }
-                  className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                  className="input"
                 />
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   {
                     formData.phone
                   }
                 </p>
               )}
             </InfoCard>
-
-            {/* SPECIALIZATION */}
 
             <InfoCard
               icon={
@@ -627,7 +622,7 @@ const DoctorProfile = () => {
                   onChange={
                     handleChange
                   }
-                  className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                  className="input"
                 >
                   <option value="">
                     Select
@@ -647,15 +642,13 @@ const DoctorProfile = () => {
                   )}
                 </select>
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   {
                     formData.specialization
                   }
                 </p>
               )}
             </InfoCard>
-
-            {/* DEPARTMENT */}
 
             <InfoCard
               icon={
@@ -672,7 +665,7 @@ const DoctorProfile = () => {
                   onChange={
                     handleChange
                   }
-                  className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                  className="input"
                 >
                   <option value="">
                     Select
@@ -693,15 +686,13 @@ const DoctorProfile = () => {
                   ))}
                 </select>
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   {
                     formData.department
                   }
                 </p>
               )}
             </InfoCard>
-
-            {/* EXPERIENCE */}
 
             <InfoCard
               icon={
@@ -712,7 +703,6 @@ const DoctorProfile = () => {
               {editing ? (
                 <input
                   type="number"
-                  min="0"
                   name="experience"
                   value={
                     formData.experience
@@ -720,10 +710,10 @@ const DoctorProfile = () => {
                   onChange={
                     handleChange
                   }
-                  className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                  className="input"
                 />
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   {
                     formData.experience
                   }{" "}
@@ -732,8 +722,6 @@ const DoctorProfile = () => {
               )}
             </InfoCard>
 
-            {/* CONSULTATION FEE */}
-
             <InfoCard
               icon={
                 <BadgeDollarSign />
@@ -741,26 +729,19 @@ const DoctorProfile = () => {
               title="Consultation Fee"
             >
               {editing ? (
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">
-                    ৳
-                  </span>
-
-                  <input
-                    type="number"
-                    min="0"
-                    name="consultationFee"
-                    value={
-                      formData.consultationFee
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    className=" pl-8 w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
-                  />
-                </div>
+                <input
+                  type="number"
+                  name="consultationFee"
+                  value={
+                    formData.consultationFee
+                  }
+                  onChange={
+                    handleChange
+                  }
+                  className="input"
+                />
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   ৳{" "}
                   {
                     formData.consultationFee
@@ -768,8 +749,6 @@ const DoctorProfile = () => {
                 </p>
               )}
             </InfoCard>
-
-            {/* TIME */}
 
             <InfoCard
               icon={
@@ -781,7 +760,6 @@ const DoctorProfile = () => {
                 <div className="flex gap-3">
                   <input
                     type="time"
-                    step="60"
                     name="startTime"
                     value={
                       formData.startTime
@@ -789,12 +767,11 @@ const DoctorProfile = () => {
                     onChange={
                       handleChange
                     }
-                    className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                    className="input"
                   />
 
                   <input
                     type="time"
-                    step="60"
                     name="endTime"
                     value={
                       formData.endTime
@@ -802,11 +779,11 @@ const DoctorProfile = () => {
                     onChange={
                       handleChange
                     }
-                    className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 text-slate-700 font-medium outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                    className="input"
                   />
                 </div>
               ) : (
-                <p className="text-slate-700 font-medium">
+                <p>
                   {formatTime(
                     formData.startTime
                   )}{" "}
@@ -818,248 +795,274 @@ const DoctorProfile = () => {
               )}
             </InfoCard>
 
-            {/* DAYS */}
-
-            <div className="bg-blue-50 rounded-3xl p-5 border border-blue-100 md:col-span-2">
-              <div className="flex items-center gap-3 mb-4 text-blue-600">
+            <InfoCard
+              icon={
                 <CalendarDays />
-
-                <h4 className="font-semibold">
-                  Available Days
-                </h4>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {days.map(
-                  (day) => (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() =>
-                        editing &&
-                        handleDaySelect(
-                          day
-                        )
-                      }
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                        formData.availableDays.includes(
-                          day
-                        )
-                          ? "bg-blue-600 text-white"
-                          : "bg-white border border-blue-200 text-slate-700"
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ================================= */}
-        {/* PART-3 */}
-        {/* ================================= */}
-
-        <div className="space-y-6">
-          {/* IMAGE + BIO */}
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* IMAGE */}
-
-            <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-slate-800 mb-6">
-                Doctor Card
-                Image
-              </h3>
-
-              <div className="w-full h-[350px] rounded-[30px] overflow-hidden bg-blue-50 border border-blue-100">
-                {imagePreview ? (
-                  <img
-                    src={
-                      imagePreview
-                    }
-                    alt="doctor-card"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-blue-600 text-5xl font-bold">
-                    {
-                      formData
-                        ?.name?.[0]
-                    }
-                  </div>
-                )}
-              </div>
-
-              {editing && (
-                <label className="mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl cursor-pointer font-medium">
-                  <Camera size={18} />
-
-                  Upload Image
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={
-                      handleImage
-                    }
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
-
-            {/* BIO */}
-
-            <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-slate-800 mb-6">
-                Biography
-              </h3>
-
+              }
+              title="Status"
+            >
               {editing ? (
-                <textarea
-                  rows="15"
-                  name="bio"
+                <select
+                  name="status"
                   value={
-                    formData.bio
+                    formData.status
                   }
                   onChange={
                     handleChange
                   }
-                  className="w-full h-[350px] border border-blue-200 rounded-3xl p-5"
-                ></textarea>
+                  className="input"
+                >
+                  <option value="Available">
+                    Available
+                  </option>
+
+                  <option value="On Leave">
+                    On Leave
+                  </option>
+
+                  <option value="Not Available">
+                    Not
+                    Available
+                  </option>
+                </select>
               ) : (
-                <p className="text-slate-600 leading-relaxed">
-                  {formData.bio ||
-                    "No biography added"}
+                <p>
+                  {
+                    formData.status
+                  }
                 </p>
               )}
-            </div>
-          </div>
+            </InfoCard>
 
-          {/* QUALIFICATION */}
+          </div>
+        </div>
+
+        {/* AVAILABLE DAYS */}
+
+        <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
+
+          <h3 className="text-2xl font-bold mb-6">
+            Available Days
+          </h3>
+
+          <div className="flex flex-wrap gap-3">
+            {days.map(
+              (day) => (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() =>
+                    editing &&
+                    handleDaySelect(
+                      day
+                    )
+                  }
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+                    formData.availableDays.includes(
+                      day
+                    )
+                      ? "bg-blue-600 text-white"
+                      : "bg-white border border-blue-200 text-slate-700"
+                  }`}
+                >
+                  {day}
+                </button>
+              )
+            )}
+          </div>
+        </div>
+
+        {/* IMAGE + BIO */}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          {/* IMAGE */}
 
           <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-slate-800">
-                Qualification
-                List
-              </h3>
 
-              {editing && (
-                <button
-                  type="button"
-                  onClick={
-                    addQualification
+            <h3 className="text-2xl font-bold mb-6">
+              Doctor Image
+            </h3>
+
+            <div className="w-full h-[350px] rounded-[30px] overflow-hidden bg-blue-50 border border-blue-100">
+              {imagePreview ? (
+                <img
+                  src={
+                    imagePreview ||
+                    "https://i.ibb.co/4pDNDk1/avatar.png"
                   }
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl flex items-center gap-2"
-                >
-                  <Plus size={18} />
-
-                  Add More
-                </button>
+                  alt="doctor-card"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-blue-600 text-5xl font-bold">
+                  {
+                    formData
+                      ?.name?.[0]
+                  }
+                </div>
               )}
             </div>
 
-            <div className="space-y-6">
-              {formData.qualifications
-                .filter(
-                  (item) =>
-                    editing ||
-                    item.degree ||
-                    item.institute ||
-                    item.country
-                )
-                .map(
-                  (
-                    item,
-                    index
-                  ) => (
-                    <div
-                      key={index}
-                      className="bg-blue-50 rounded-3xl p-6 border border-blue-100"
-                    >
-                      <h4 className="text-blue-700 font-bold text-lg mb-5">
-                        Qualification{" "}
-                        {index + 1}
-                      </h4>
+            {editing && (
+              <label className="mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl cursor-pointer font-medium">
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        {/* DEGREE */}
+                <Camera size={18} />
 
-                        <QualificationInput
-                          label="Degree"
-                          value={
-                            item.degree
-                          }
-                          editing={
-                            editing
-                          }
-                          onChange={(
-                            e
-                          ) =>
-                            handleQualificationChange(
-                              index,
-                              "degree",
-                              e
-                                .target
-                                .value
-                            )
-                          }
-                        />
+                Upload Image
 
-                        {/* INSTITUTE */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={
+                    handleImage
+                  }
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
 
-                        <QualificationInput
-                          label="Institute"
-                          value={
-                            item.institute
-                          }
-                          editing={
-                            editing
-                          }
-                          onChange={(
-                            e
-                          ) =>
-                            handleQualificationChange(
-                              index,
-                              "institute",
-                              e
-                                .target
-                                .value
-                            )
-                          }
-                        />
+          {/* BIO */}
 
-                        {/* COUNTRY */}
+          <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
 
-                        <QualificationInput
-                          label="Country"
-                          value={
-                            item.country
-                          }
-                          editing={
-                            editing
-                          }
-                          onChange={(
-                            e
-                          ) =>
-                            handleQualificationChange(
-                              index,
-                              "country",
-                              e
-                                .target
-                                .value
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-                  )
-                )}
-            </div>
+            <h3 className="text-2xl font-bold mb-6">
+              Biography
+            </h3>
+
+            {editing ? (
+              <textarea
+                rows="15"
+                name="bio"
+                value={
+                  formData.bio
+                }
+                onChange={
+                  handleChange
+                }
+                className="w-full h-[350px] border border-blue-200 rounded-3xl p-5"
+              ></textarea>
+            ) : (
+              <p className="text-slate-600 leading-relaxed">
+                {formData.bio ||
+                  "No biography added"}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* QUALIFICATIONS */}
+
+        <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
+
+          <div className="flex items-center justify-between mb-6">
+
+            <h3 className="text-2xl font-bold">
+              Qualification
+              List
+            </h3>
+
+            {editing && (
+              <button
+                type="button"
+                onClick={
+                  addQualification
+                }
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl flex items-center gap-2"
+              >
+                <Plus size={18} />
+
+                Add More
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-6">
+
+            {formData.qualifications.map(
+              (
+                item,
+                index
+              ) => (
+                <div
+                  key={index}
+                  className="bg-blue-50 rounded-3xl p-6 border border-blue-100"
+                >
+
+                  <h4 className="text-blue-700 font-bold text-lg mb-5">
+                    Qualification{" "}
+                    {index + 1}
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                    <QualificationInput
+                      label="Degree"
+                      value={
+                        item.degree
+                      }
+                      editing={
+                        editing
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        handleQualificationChange(
+                          index,
+                          "degree",
+                          e
+                            .target
+                            .value
+                        )
+                      }
+                    />
+
+                    <QualificationInput
+                      label="Institute"
+                      value={
+                        item.institute
+                      }
+                      editing={
+                        editing
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        handleQualificationChange(
+                          index,
+                          "institute",
+                          e
+                            .target
+                            .value
+                        )
+                      }
+                    />
+
+                    <QualificationInput
+                      label="Country"
+                      value={
+                        item.country
+                      }
+                      editing={
+                        editing
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        handleQualificationChange(
+                          index,
+                          "country",
+                          e
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>
@@ -1078,6 +1081,7 @@ const InfoCard = ({
 }) => {
   return (
     <div className="bg-blue-50 rounded-3xl p-5 border border-blue-100">
+
       <div className="flex items-center gap-3 mb-3 text-blue-600">
         {icon}
 

@@ -100,11 +100,13 @@ const updateDoctor = async (
   res: Response
 ) => {
   try {
+
     // IMAGE
 
     if (req.file) {
+
       req.body.image =
-        `/uploads/${req.file.filename}`;
+        `/uploads/reports/${req.file.filename}`;
     }
 
     const result =
@@ -121,8 +123,12 @@ const updateDoctor = async (
 
       data: result,
     });
+
   } catch (error: any) {
-    res.status(400).json({
+
+    console.log(error);
+
+    res.status(500).json({
       success: false,
 
       message:

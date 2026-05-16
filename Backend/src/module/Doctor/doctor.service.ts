@@ -63,32 +63,53 @@ const updateDoctor = async (
     }
   );
 
+
   // QUALIFICATION
 
-  let qualification =
-    [];
+  let qualification = [];
 
-  if (
-    payload.qualification
-  ) {
-    qualification =
-      JSON.parse(
-        payload.qualification
-      );
+  try {
+
+    if (
+      payload.qualification
+    ) {
+
+      qualification =
+        typeof payload.qualification ===
+          "string"
+          ? JSON.parse(
+            payload.qualification
+          )
+          : payload.qualification;
+    }
+
+  } catch (error) {
+
+    qualification = [];
   }
 
   // AVAILABLE DAYS
 
-  let availableDays =
-    [];
+  let availableDays = [];
 
-  if (
-    payload.availableDays
-  ) {
-    availableDays =
-      JSON.parse(
-        payload.availableDays
-      );
+  try {
+
+    if (
+      payload.availableDays
+    ) {
+
+      availableDays =
+        typeof payload.availableDays ===
+          "string"
+          ? JSON.parse(
+            payload.availableDays
+          )
+          : payload.availableDays;
+    }
+
+  } catch (error) {
+
+    availableDays = [];
   }
 
   // UPDATE
@@ -98,7 +119,8 @@ const updateDoctor = async (
       id,
       {
         image:
-          payload.image,
+          payload.image ||
+          doctor.image,
 
         phone:
           payload.phone,
@@ -143,12 +165,12 @@ const updateDoctor = async (
 };
 
 export const DoctorServices =
-  {
-    createDoctor,
+{
+  createDoctor,
 
-    getAllDoctors,
+  getAllDoctors,
 
-    getSingleDoctor,
+  getSingleDoctor,
 
-    updateDoctor,
-  };
+  updateDoctor,
+};
