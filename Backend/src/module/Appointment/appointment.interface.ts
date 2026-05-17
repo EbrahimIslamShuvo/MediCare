@@ -5,6 +5,7 @@
 import { Types } from "mongoose";
 
 export interface IAppointment {
+
   patient: Types.ObjectId;
 
   doctor: Types.ObjectId;
@@ -23,6 +24,8 @@ export interface IAppointment {
   status?:
     | "Pending"
     | "Confirmed"
+    | "Visited"
+    | "Completed"
     | "Cancelled";
 
   expiresAt?: Date;

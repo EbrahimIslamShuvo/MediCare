@@ -4,38 +4,47 @@
 
 import express from "express";
 
-import { NurseControllers } from "./nurse.controller";
+import {
+    NurseControllers,
+} from "./nurse.controller";
 
 const router =
-  express.Router();
+    express.Router();
 
-// CREATE NURSE
+// CREATE
 
 router.post(
-  "/create-nurse",
-  NurseControllers.createNurse
+    "/",
+    NurseControllers.createNurse
 );
 
-// GET ALL NURSES
+// GET ALL
 
 router.get(
-  "/",
-  NurseControllers.getAllNurses
+    "/",
+    NurseControllers.getAllNurses
 );
 
-// GET SINGLE NURSE
+// GET SINGLE
 
 router.get(
-  "/:id",
-  NurseControllers.getSingleNurse
+    "/:id",
+    NurseControllers.getSingleNurse
 );
 
-// UPDATE NURSE
+// UPDATE
 
 router.patch(
-  "/:id",
-  NurseControllers.updateNurse
+    "/:id",
+    NurseControllers.updateNurse
+);
+
+// DELETE
+
+router.delete(
+    "/:id",
+    NurseControllers.deleteNurse
 );
 
 export const NurseRoutes =
-  router;
+    router;

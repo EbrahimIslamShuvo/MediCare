@@ -6,10 +6,12 @@ import React, {
 import {
     Clock3,
     Activity,
+    FileText,
 } from "lucide-react";
 
 const TestRequestion =
     () => {
+
         // =====================================
         // STATES
         // =====================================
@@ -44,19 +46,23 @@ const TestRequestion =
         // =====================================
 
         useEffect(() => {
+
             fetchTests();
+
         }, []);
 
         const fetchTests =
             async () => {
+
                 try {
+
                     setLoading(
                         true
                     );
 
                     const response =
                         await fetch(
-                            "http://127.0.0.1:3000/api/v1/lab-tests"
+                            "http://127.0.0.1:3000/api/v1/admit-requests"
                         );
 
                     const result =
@@ -65,28 +71,89 @@ const TestRequestion =
                     if (
                         result.success
                     ) {
-                        const filtered =
-                            result.data.filter(
-                                (
-                                    item
-                                ) =>
-                                    item.status ===
-                                        "Pending" ||
-                                    item.status ===
-                                        "Processing"
-                            );
+
+                        const formatted =
+                            [];
+
+                        result.data.forEach(
+                            (
+                                admit
+                            ) => {
+
+                                if (
+                                    admit.status ===
+                                    "Admitted"
+                                ) {
+
+                                    admit.testRequests?.forEach(
+                                        (
+                                            test,
+                                            index
+                                        ) => {
+
+                                            if (
+                                                test.isSent
+                                            ) {
+
+                                                formatted.push(
+                                                    {
+                                                        _id:
+                                                            `${admit._id}-${index}`,
+
+                                                        admitId:
+                                                            admit._id,
+
+                                                        testIndex:
+                                                            index,
+
+                                                        patient:
+                                                            admit.patient,
+
+                                                        room:
+                                                            admit.room,
+
+                                                        status:
+                                                            test.status ||
+                                                            "Pending",
+
+                                                        reportPdf:
+                                                            test.reportPdf ||
+                                                            "",
+
+                                                        totalAmount:
+                                                            test.price,
+
+                                                        tests:
+                                                            [
+                                                                {
+                                                                    name:
+                                                                        test.testName,
+                                                                },
+                                                            ],
+                                                    }
+                                                );
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
 
                         setTests(
-                            filtered
+                            formatted
                         );
                     }
+
                 } catch (
                     error
                 ) {
+
                     console.log(
                         error
                     );
+
                 } finally {
+
                     setLoading(
                         false
                     );
@@ -99,28 +166,30 @@ const TestRequestion =
 
         const updateStatus =
             async (
-                id,
+                admitId,
+                index,
                 status
             ) => {
+
                 try {
+
+                    const formData =
+                        new FormData();
+
+                    formData.append(
+                        "status",
+                        status
+                    );
+
                     const response =
                         await fetch(
-                            `http://127.0.0.1:3000/api/v1/lab-tests/${id}`,
+                            `http://127.0.0.1:3000/api/v1/admit-requests/lab-test/${admitId}/${index}`,
                             {
                                 method:
                                     "PATCH",
 
-                                headers:
-                                    {
-                                        "Content-Type":
-                                            "application/json",
-                                    },
-
-                                body: JSON.stringify(
-                                    {
-                                        status,
-                                    }
-                                ),
+                                body:
+                                    formData,
                             }
                         );
 
@@ -130,11 +199,14 @@ const TestRequestion =
                     if (
                         result.success
                     ) {
+
                         fetchTests();
                     }
+
                 } catch (
                     error
                 ) {
+
                     console.log(
                         error
                     );
@@ -147,12 +219,15 @@ const TestRequestion =
 
         const uploadReport =
             async () => {
+
                 try {
+
                     if (
                         !report
                     ) {
+
                         alert(
-                            "Please select PDF report"
+                            "Select PDF report"
                         );
 
                         return;
@@ -162,18 +237,24 @@ const TestRequestion =
                         new FormData();
 
                     formData.append(
-                        "report",
+                        "status",
+                        "Completed"
+                    );
+
+                    formData.append(
+                        "reportPdf",
                         report
                     );
 
                     const response =
                         await fetch(
-                            `http://127.0.0.1:3000/api/v1/lab-tests/complete/${selectedTest._id}`,
+                            `http://127.0.0.1:3000/api/v1/admit-requests/lab-test/${selectedTest.admitId}/${selectedTest.testIndex}`,
                             {
                                 method:
                                     "PATCH",
 
-                                body: formData,
+                                body:
+                                    formData,
                             }
                         );
 
@@ -183,8 +264,9 @@ const TestRequestion =
                     if (
                         result.success
                     ) {
+
                         alert(
-                            "Report uploaded successfully"
+                            "Report Uploaded"
                         );
 
                         setShowModal(
@@ -195,11 +277,17 @@ const TestRequestion =
                             null
                         );
 
+                        setSelectedTest(
+                            null
+                        );
+
                         fetchTests();
                     }
+
                 } catch (
                     error
                 ) {
+
                     console.log(
                         error
                     );
@@ -211,200 +299,174 @@ const TestRequestion =
         // =====================================
 
         if (loading) {
+
             return (
-                <div className="min-h-screen flex justify-center items-center text-2xl font-black text-blue-600">
+                <div className="min-h-screen flex justify-center items-center text-3xl font-black text-blue-600">
                     Loading...
                 </div>
             );
         }
 
         return (
-            <div className="min-h-screen bg-blue-50 p-4">
-                {/* HEADER */}
+            <div className="min-h-screen bg-blue-50 p-5">
 
-                <div className="mb-5">
-                    <h2 className="text-3xl font-black text-slate-800 mb-1">
-                        Test
-                        Requests
+                <div className="mb-6">
+
+                    <h2 className="text-4xl font-black text-slate-800 mb-2">
+                        Laboratory
+                        Tests
                     </h2>
 
                     <p className="text-slate-500">
-                        Pending and
-                        processing
-                        laboratory
-                        tests
+                        Admitted patient
+                        laboratory requests
                     </p>
                 </div>
 
-                {/* EMPTY */}
+                <div className="bg-white rounded-[30px] overflow-hidden border border-blue-100">
 
-                {tests.length ===
-                    0 && (
-                        <div className="bg-white rounded-[30px] border border-blue-100 p-16 text-center">
-                            <h2 className="text-3xl font-black text-slate-800 mb-3">
-                                No Test
-                                Requests
-                            </h2>
+                    <div className="overflow-x-auto">
 
-                            <p className="text-slate-500">
-                                No pending
-                                laboratory
-                                tests found
-                            </p>
-                        </div>
-                    )}
+                        <table className="w-full">
 
-                {/* TABLE */}
+                            <thead className="bg-blue-600 text-white">
 
-                {tests.length >
-                    0 && (
-                        <div className="bg-white rounded-[30px] border border-blue-100 shadow-sm overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="bg-blue-600 text-white">
-                                        <tr>
-                                            <th className="px-5 py-4 text-left">
-                                                Patient
-                                            </th>
+                                <tr>
 
-                                            <th className="px-5 py-4 text-left">
-                                                Tests
-                                            </th>
+                                    <th className="px-5 py-4 text-left">
+                                        Patient
+                                    </th>
 
-                                            <th className="px-5 py-4 text-left">
-                                                Amount
-                                            </th>
+                                    <th className="px-5 py-4 text-left">
+                                        Room
+                                    </th>
 
-                                            <th className="px-5 py-4 text-left">
-                                                Payment
-                                            </th>
+                                    <th className="px-5 py-4 text-left">
+                                        Test
+                                    </th>
 
-                                            <th className="px-5 py-4 text-left">
-                                                Status
-                                            </th>
+                                    <th className="px-5 py-4 text-left">
+                                        Amount
+                                    </th>
 
-                                            <th className="px-5 py-4 text-left">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
+                                    <th className="px-5 py-4 text-left">
+                                        Status
+                                    </th>
 
-                                    <tbody>
-                                        {tests.map(
-                                            (
-                                                item,
-                                                index
-                                            ) => (
-                                                <tr
-                                                    key={
-                                                        item._id
+                                    <th className="px-5 py-4 text-left">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {
+                                    tests.map(
+                                        (
+                                            item,
+                                            index
+                                        ) => (
+
+                                            <tr
+                                                key={
+                                                    item._id
+                                                }
+                                                className={`border-b border-blue-50 ${
+                                                    index %
+                                                        2 ===
+                                                    0
+                                                        ? "bg-white"
+                                                        : "bg-blue-50/30"
+                                                }`}
+                                            >
+
+                                                <td className="px-5 py-5">
+
+                                                    <div>
+
+                                                        <h2 className="font-black text-slate-800">
+                                                            {
+                                                                item
+                                                                    ?.patient
+                                                                    ?.user
+                                                                    ?.name
+                                                            }
+                                                        </h2>
+
+                                                        <p className="text-slate-500 text-sm">
+                                                            {
+                                                                item
+                                                                    ?.patient
+                                                                    ?.user
+                                                                    ?.email
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-5 py-5 font-bold">
+
+                                                    {
+                                                        item
+                                                            ?.room
+                                                            ?.roomNumber
                                                     }
-                                                    className={`border-b border-blue-50 ${
-                                                        index %
-                                                            2 ===
-                                                        0
-                                                            ? "bg-white"
-                                                            : "bg-blue-50/40"
-                                                    }`}
-                                                >
-                                                    {/* PATIENT */}
+                                                </td>
 
-                                                    <td className="px-5 py-5">
-                                                        <div>
-                                                            <h3 className="font-black text-slate-800">
-                                                                {
-                                                                    item
-                                                                        ?.patient
-                                                                        ?.user
-                                                                        ?.name
-                                                                }
-                                                            </h3>
+                                                <td className="px-5 py-5">
 
-                                                            <p className="text-slate-500 text-sm">
-                                                                {
-                                                                    item
-                                                                        ?.patient
-                                                                        ?.user
-                                                                        ?.email
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    </td>
+                                                    {
+                                                        item
+                                                            ?.tests[0]
+                                                            ?.name
+                                                    }
+                                                </td>
 
-                                                    {/* TESTS */}
+                                                <td className="px-5 py-5 font-black">
 
-                                                    <td className="px-5 py-5">
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {item.tests.map(
-                                                                (
-                                                                    test,
-                                                                    i
-                                                                ) => (
-                                                                    <span
-                                                                        key={
-                                                                            i
-                                                                        }
-                                                                        className="bg-purple-100 text-purple-600 px-3 py-1 rounded-xl text-sm font-bold"
-                                                                    >
-                                                                        {
-                                                                            test.name
-                                                                        }
-                                                                    </span>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </td>
+                                                    ৳
+                                                    {
+                                                        item.totalAmount
+                                                    }
+                                                </td>
 
-                                                    {/* AMOUNT */}
+                                                <td className="px-5 py-5">
 
-                                                    <td className="px-5 py-5 font-black">
-                                                        ৳{" "}
+                                                    <span
+                                                        className={`px-4 py-2 rounded-2xl text-sm font-black ${
+                                                            item.status ===
+                                                            "Pending"
+                                                                ? "bg-yellow-100 text-yellow-600"
+                                                                : item.status ===
+                                                                  "Processing"
+                                                                ? "bg-blue-100 text-blue-600"
+                                                                : "bg-green-100 text-green-600"
+                                                        }`}
+                                                    >
                                                         {
-                                                            item.totalAmount
+                                                            item.status
                                                         }
-                                                    </td>
+                                                    </span>
+                                                </td>
 
-                                                    {/* PAYMENT */}
+                                                <td className="px-5 py-5">
 
-                                                    <td className="px-5 py-5">
-                                                        <span className="bg-green-100 text-green-600 px-3 py-1 rounded-xl text-sm font-bold">
-                                                            {
-                                                                item.paymentStatus
-                                                            }
-                                                        </span>
-                                                    </td>
+                                                    {
+                                                        item.status ===
+                                                        "Pending" && (
 
-                                                    {/* STATUS */}
-
-                                                    <td className="px-5 py-5">
-                                                        <span
-                                                            className={`px-3 py-1 rounded-xl text-sm font-bold ${
-                                                                item.status ===
-                                                                "Pending"
-                                                                    ? "bg-yellow-100 text-yellow-600"
-                                                                    : "bg-blue-100 text-blue-600"
-                                                            }`}
-                                                        >
-                                                            {
-                                                                item.status
-                                                            }
-                                                        </span>
-                                                    </td>
-
-                                                    {/* ACTION */}
-
-                                                    <td className="px-5 py-5">
-                                                        {item.status ===
-                                                            "Pending" && (
                                                             <button
                                                                 onClick={() =>
                                                                     updateStatus(
-                                                                        item._id,
+                                                                        item.admitId,
+                                                                        item.testIndex,
                                                                         "Processing"
                                                                     )
                                                                 }
                                                                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2"
                                                             >
+
                                                                 <Clock3
                                                                     size={
                                                                         16
@@ -413,12 +475,16 @@ const TestRequestion =
 
                                                                 Start
                                                             </button>
-                                                        )}
+                                                        )
+                                                    }
 
-                                                        {item.status ===
-                                                            "Processing" && (
+                                                    {
+                                                        item.status ===
+                                                        "Processing" && (
+
                                                             <button
                                                                 onClick={() => {
+
                                                                     setSelectedTest(
                                                                         item
                                                                     );
@@ -429,75 +495,104 @@ const TestRequestion =
                                                                 }}
                                                                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2"
                                                             >
+
                                                                 <Activity
                                                                     size={
                                                                         16
                                                                     }
                                                                 />
 
-                                                                Complete
+                                                                Upload Report
                                                             </button>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            )
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+                                                        )
+                                                    }
+
+                                                    {
+                                                        item.status ===
+                                                        "Completed" && (
+
+                                                            <a
+                                                                href={`http://127.0.0.1:3000${item.reportPdf}`}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="text-blue-600 font-black flex items-center gap-2"
+                                                            >
+
+                                                                <FileText
+                                                                    size={
+                                                                        18
+                                                                    }
+                                                                />
+
+                                                                View PDF
+                                                            </a>
+                                                        )
+                                                    }
+                                                </td>
+                                            </tr>
+                                        )
+                                    )
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 {/* MODAL */}
 
-                {showModal && (
-                    <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center p-5">
-                        <div className="w-full max-w-lg bg-white rounded-[30px] p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-black text-slate-800">
-                                    Upload
-                                    Report
-                                </h2>
+                {
+                    showModal && (
 
-                                <button
-                                    onClick={() =>
-                                        setShowModal(
-                                            false
+                        <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center p-5">
+
+                            <div className="w-full max-w-lg bg-white rounded-[30px] p-6">
+
+                                <div className="flex items-center justify-between mb-6">
+
+                                    <h2 className="text-2xl font-black text-slate-800">
+                                        Upload PDF
+                                        Report
+                                    </h2>
+
+                                    <button
+                                        onClick={() =>
+                                            setShowModal(
+                                                false
+                                            )
+                                        }
+                                        className="w-10 h-10 rounded-xl bg-red-100 text-red-600 text-xl font-black"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    onChange={(
+                                        e
+                                    ) =>
+                                        setReport(
+                                            e.target
+                                                .files[0]
                                         )
                                     }
-                                    className="w-10 h-10 rounded-xl bg-red-100 text-red-600 text-xl font-black"
+                                    className="w-full border border-slate-200 rounded-2xl p-4 mb-5"
+                                />
+
+                                <button
+                                    onClick={
+                                        uploadReport
+                                    }
+                                    className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-black"
                                 >
-                                    ×
+                                    Upload PDF
+                                    Report
                                 </button>
                             </div>
-
-                            <input
-                                type="file"
-                                accept="application/pdf"
-                                onChange={(
-                                    e
-                                ) =>
-                                    setReport(
-                                        e
-                                            .target
-                                            .files[0]
-                                    )
-                                }
-                                className="w-full border border-slate-200 rounded-2xl p-4 mb-5"
-                            />
-
-                            <button
-                                onClick={
-                                    uploadReport
-                                }
-                                className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-black"
-                            >
-                                Upload
-                                Report
-                            </button>
                         </div>
-                    </div>
-                )}
+                    )
+                }
             </div>
         );
     };

@@ -111,10 +111,10 @@ const Sidebar = ({
       },
 
       {
-        name: "My Schedule",
+        name: "Request Admission",
         icon: Clock3,
         path:
-          "/dashboard/doctor/schedule",
+          "/dashboard/doctor/Admit",
       },
 
       {
@@ -160,6 +160,12 @@ const Sidebar = ({
         icon: ClipboardList,
         path:
           "/dashboard/patient/prescription",
+      },
+      {
+        name: "Medical History",
+        icon: ClipboardList,
+        path:
+          "/dashboard/patient/history",
       },
 
       {
@@ -302,25 +308,10 @@ const Sidebar = ({
 
       {
         name:
-          "Ward Management",
-        icon: BedDouble,
-        path:
-          "/dashboard/wards",
-      },
-
-      {
-        name:
           "Patient Care",
         icon: HeartPulse,
         path:
-          "/dashboard/patient-care",
-      },
-
-      {
-        name: "Schedule",
-        icon: Clock3,
-        path:
-          "/dashboard/schedule",
+          "/dashboard/nurse/patient-care",
       },
 
       {
@@ -328,14 +319,14 @@ const Sidebar = ({
           "Logs & Reports",
         icon: FileText,
         path:
-          "/dashboard/logs",
+          "/dashboard/nurse/logs",
       },
 
       {
         name: "Profile",
         icon: UserRound,
         path:
-          "/dashboard/profile",
+          "/dashboard/nurse/profile",
       },
     ],
 

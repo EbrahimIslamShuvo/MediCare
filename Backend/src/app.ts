@@ -17,6 +17,8 @@ import { LabTestRoutes } from "./module/LabTest/labTest.route";
 import { LaboratoryRoutes } from "./module/Labtatory/laboratory.route";
 import { AmbulanceRoutes } from "./module/Ambulance/ambulance.route";
 import { AmbulanceRequestRoutes } from "./module/AmbulanceRequest/ambulanceRequest.route";
+import { RoomRoutes } from "./module/Room/room.route";
+import { AdmitRequestRoutes } from "./module/AdmitRequest/admitRequest.route";
 
 
 const app = express();
@@ -118,8 +120,18 @@ app.use(
 );
 
 app.use(
+  "/api/v1/rooms",
+  RoomRoutes
+);
+
+app.use(
   "/api/v1/ambulance-requests",
   AmbulanceRequestRoutes
+);
+
+app.use(
+  "/api/v1/admit-requests",
+  AdmitRequestRoutes
 );
 
 // TEST

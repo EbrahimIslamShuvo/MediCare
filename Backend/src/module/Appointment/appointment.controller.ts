@@ -9,16 +9,16 @@ import type {
 
 import { AppointmentServices } from "./appointment.service";
 
-// ======================================
-// CREATE APPOINTMENT
-// ======================================
+// CREATE
 
 const createAppointment =
   async (
     req: Request,
     res: Response
   ) => {
+
     try {
+
       const { userId } =
         req.body;
 
@@ -36,7 +36,9 @@ const createAppointment =
 
         data: result,
       });
+
     } catch (error: any) {
+
       res.status(400).json({
         success: false,
 
@@ -46,16 +48,16 @@ const createAppointment =
     }
   };
 
-// ======================================
-// GET ALL APPOINTMENTS
-// ======================================
+// GET ALL
 
 const getAllAppointments =
   async (
     req: Request,
     res: Response
   ) => {
+
     try {
+
       const result =
         await AppointmentServices.getAllAppointments();
 
@@ -64,7 +66,9 @@ const getAllAppointments =
 
         data: result,
       });
+
     } catch (error: any) {
+
       res.status(400).json({
         success: false,
 
@@ -74,22 +78,19 @@ const getAllAppointments =
     }
   };
 
-// ======================================
-// GET PATIENT APPOINTMENTS
-// ======================================
+// MY APPOINTMENTS
 
 const getMyAppointments =
   async (
     req: Request,
     res: Response
   ) => {
+
     try {
-      const { userId } =
-        req.params;
 
       const result =
         await AppointmentServices.getMyAppointments(
-          userId as string
+          req.params.userId as string
         );
 
       res.status(200).json({
@@ -97,7 +98,9 @@ const getMyAppointments =
 
         data: result,
       });
+
     } catch (error: any) {
+
       res.status(400).json({
         success: false,
 
@@ -107,22 +110,19 @@ const getMyAppointments =
     }
   };
 
-// ======================================
-// GET DOCTOR APPOINTMENTS
-// ======================================
+// DOCTOR APPOINTMENTS
 
 const getDoctorAppointments =
   async (
     req: Request,
     res: Response
   ) => {
+
     try {
-      const { userId } =
-        req.params;
 
       const result =
         await AppointmentServices.getDoctorAppointments(
-          userId as string
+          req.params.userId as string
         );
 
       res.status(200).json({
@@ -130,7 +130,9 @@ const getDoctorAppointments =
 
         data: result,
       });
+
     } catch (error: any) {
+
       res.status(400).json({
         success: false,
 
@@ -140,16 +142,16 @@ const getDoctorAppointments =
     }
   };
 
-// ======================================
-// STAFF ALL APPOINTMENTS
-// ======================================
+// STAFF
 
 const getAllAppointmentsForStaff =
   async (
     req: Request,
     res: Response
   ) => {
+
     try {
+
       const result =
         await AppointmentServices.getAllAppointmentsForStaff();
 
@@ -158,7 +160,9 @@ const getAllAppointmentsForStaff =
 
         data: result,
       });
+
     } catch (error: any) {
+
       res.status(400).json({
         success: false,
 
@@ -168,22 +172,19 @@ const getAllAppointmentsForStaff =
     }
   };
 
-// ======================================
 // CONFIRM PAYMENT
-// ======================================
 
 const confirmPayment =
   async (
     req: Request,
     res: Response
   ) => {
+
     try {
-      const { id } =
-        req.params;
 
       const result =
         await AppointmentServices.confirmPayment(
-          id as string
+          req.params.id as string
         );
 
       res.status(200).json({
@@ -191,8 +192,74 @@ const confirmPayment =
 
         data: result,
       });
+
     } catch (error: any) {
+
       res.status(400).json({
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };
+
+// MARK VISITED
+
+const markVisited =
+  async (
+    req: Request,
+    res: Response
+  ) => {
+
+    try {
+
+      const result =
+        await AppointmentServices.markVisited(
+          req.params.id as string
+        );
+
+      res.status(200).json({
+        success: true,
+
+        data: result,
+      });
+
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };
+
+// COMPLETE
+
+const completeAppointment =
+  async (
+    req: Request,
+    res: Response
+  ) => {
+
+    try {
+
+      const result =
+        await AppointmentServices.completeAppointment(
+          req.params.id as string
+        );
+
+      res.status(200).json({
+        success: true,
+
+        data: result,
+      });
+
+    } catch (error: any) {
+
+      res.status(500).json({
         success: false,
 
         message:
@@ -214,4 +281,8 @@ export const AppointmentControllers =
     getAllAppointmentsForStaff,
 
     confirmPayment,
+
+    markVisited,
+
+    completeAppointment,
   };

@@ -6,6 +6,7 @@ import React, {
 
 const MyAppointment =
     () => {
+
         // =====================================
         // USER
         // =====================================
@@ -14,7 +15,7 @@ const MyAppointment =
             JSON.parse(
                 localStorage.getItem(
                     "user"
-                )
+                ) || "{}"
             );
 
         // =====================================
@@ -36,10 +37,6 @@ const MyAppointment =
             setFilter,
         ] = useState("All");
 
-        // =====================================
-        // PRESCRIPTION MODAL
-        // =====================================
-
         const [
             showPrescriptionModal,
             setShowPrescriptionModal,
@@ -56,9 +53,7 @@ const MyAppointment =
         ] = useState([
             {
                 medicine: "",
-
                 time: [],
-
                 duration: "",
             },
         ]);
@@ -69,36 +64,32 @@ const MyAppointment =
         ] = useState([
             {
                 testName: "",
-
                 comment: "",
             },
         ]);
 
-        // =====================================
-        // TEST LIST
-        // =====================================
+        const [
+            allTests,
+            setAllTests,
+        ] = useState([]);
 
-        const [allTests, setAllTests,] = useState([]);
-
         // =====================================
-        // FETCH APPOINTMENTS
+        // FETCH
         // =====================================
 
         useEffect(() => {
+
             fetchAppointments();
-        }, []);
 
-        // =====================================
-        // FETCH TESTS
-        // =====================================
-
-        useEffect(() => {
             fetchTests();
+
         }, []);
 
         const fetchTests =
             async () => {
+
                 try {
+
                     const response =
                         await fetch(
                             "/tests.json"
@@ -110,7 +101,11 @@ const MyAppointment =
                     setAllTests(
                         data
                     );
-                } catch (error) {
+
+                } catch (
+                    error
+                ) {
+
                     console.log(
                         error
                     );
@@ -119,7 +114,9 @@ const MyAppointment =
 
         const fetchAppointments =
             async () => {
+
                 try {
+
                     const response =
                         await fetch(
                             `http://127.0.0.1:3000/api/v1/appointments/doctor/${user._id}`
@@ -131,15 +128,22 @@ const MyAppointment =
                     if (
                         result.success
                     ) {
+
                         setAppointments(
                             result.data
                         );
                     }
-                } catch (error) {
+
+                } catch (
+                    error
+                ) {
+
                     console.log(
                         error
                     );
+
                 } finally {
+
                     setLoading(
                         false
                     );
@@ -152,82 +156,97 @@ const MyAppointment =
 
         const filteredAppointments =
             useMemo(() => {
+
                 const today =
                     new Date();
 
-                return appointments.filter(
-                    (
-                        item
-                    ) => {
-                        const appointmentDate =
-                            new Date(
-                                item.appointmentDate
-                            );
+                return appointments
+                    .filter(
+                        (
+                            appointment
+                        ) =>
+                            appointment.status ===
+                            "Confirmed" ||
+                            appointment.status ===
+                            "Visited"
+                    )
+                    .filter(
+                        (
+                            item
+                        ) => {
 
-                        if (
-                            filter ===
-                            "All"
-                        ) {
+                            const appointmentDate =
+                                new Date(
+                                    item.appointmentDate
+                                );
+
+                            if (
+                                filter ===
+                                "All"
+                            ) {
+                                return true;
+                            }
+
+                            if (
+                                filter ===
+                                "Today"
+                            ) {
+
+                                return (
+                                    appointmentDate.toDateString() ===
+                                    today.toDateString()
+                                );
+                            }
+
+                            if (
+                                filter ===
+                                "This Week"
+                            ) {
+
+                                const firstDay =
+                                    new Date(
+                                        today
+                                    );
+
+                                firstDay.setDate(
+                                    today.getDate() -
+                                    today.getDay()
+                                );
+
+                                const lastDay =
+                                    new Date(
+                                        firstDay
+                                    );
+
+                                lastDay.setDate(
+                                    firstDay.getDate() +
+                                    6
+                                );
+
+                                return (
+                                    appointmentDate >=
+                                    firstDay &&
+                                    appointmentDate <=
+                                    lastDay
+                                );
+                            }
+
+                            if (
+                                filter ===
+                                "This Month"
+                            ) {
+
+                                return (
+                                    appointmentDate.getMonth() ===
+                                    today.getMonth() &&
+                                    appointmentDate.getFullYear() ===
+                                    today.getFullYear()
+                                );
+                            }
+
                             return true;
                         }
-
-                        if (
-                            filter ===
-                            "Today"
-                        ) {
-                            return (
-                                appointmentDate.toDateString() ===
-                                today.toDateString()
-                            );
-                        }
-
-                        if (
-                            filter ===
-                            "This Week"
-                        ) {
-                            const firstDay =
-                                new Date(
-                                    today
-                                );
-
-                            firstDay.setDate(
-                                today.getDate() -
-                                today.getDay()
-                            );
-
-                            const lastDay =
-                                new Date(
-                                    firstDay
-                                );
-
-                            lastDay.setDate(
-                                firstDay.getDate() +
-                                6
-                            );
-
-                            return (
-                                appointmentDate >=
-                                firstDay &&
-                                appointmentDate <=
-                                lastDay
-                            );
-                        }
-
-                        if (
-                            filter ===
-                            "This Month"
-                        ) {
-                            return (
-                                appointmentDate.getMonth() ===
-                                today.getMonth() &&
-                                appointmentDate.getFullYear() ===
-                                today.getFullYear()
-                            );
-                        }
-
-                        return true;
-                    }
-                );
+                    );
             }, [
                 appointments,
                 filter,
@@ -241,14 +260,19 @@ const MyAppointment =
             (
                 status
             ) => {
+
                 switch (
                 status
                 ) {
+
                     case "Confirmed":
+                        return "bg-blue-100 text-blue-600";
+
+                    case "Visited":
                         return "bg-green-100 text-green-600";
 
-                    case "Pending":
-                        return "bg-yellow-100 text-yellow-600";
+                    case "Completed":
+                        return "bg-purple-100 text-purple-600";
 
                     case "Cancelled":
                         return "bg-red-100 text-red-600";
@@ -266,9 +290,11 @@ const MyAppointment =
             (
                 status
             ) => {
+
                 switch (
                 status
                 ) {
+
                     case "Paid":
                         return "bg-green-100 text-green-600";
 
@@ -284,6 +310,46 @@ const MyAppointment =
             };
 
         // =====================================
+        // MARK VISITED
+        // =====================================
+
+        const markVisited =
+            async (
+                id
+            ) => {
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `http://127.0.0.1:3000/api/v1/appointments/visited/${id}`,
+                            {
+                                method:
+                                    "PATCH",
+                            }
+                        );
+
+                    const result =
+                        await response.json();
+
+                    if (
+                        result.success
+                    ) {
+
+                        fetchAppointments();
+                    }
+
+                } catch (
+                    error
+                ) {
+
+                    console.log(
+                        error
+                    );
+                }
+            };
+
+        // =====================================
         // OPEN MODAL
         // =====================================
 
@@ -291,7 +357,9 @@ const MyAppointment =
             async (
                 appointment
             ) => {
+
                 try {
+
                     setSelectedAppointment(
                         appointment
                     );
@@ -308,13 +376,13 @@ const MyAppointment =
                         result.success &&
                         result.data
                     ) {
+
                         setMedicines(
                             result.data
                                 .medicines
                                 ?.length >
                                 0
-                                ? result
-                                    .data
+                                ? result.data
                                     .medicines
                                 : [
                                     {
@@ -334,8 +402,7 @@ const MyAppointment =
                                 .tests
                                 ?.length >
                                 0
-                                ? result
-                                    .data
+                                ? result.data
                                     .tests
                                 : [
                                     {
@@ -347,7 +414,9 @@ const MyAppointment =
                                     },
                                 ]
                         );
+
                     } else {
+
                         setMedicines([
                             {
                                 medicine:
@@ -374,9 +443,11 @@ const MyAppointment =
                     setShowPrescriptionModal(
                         true
                     );
+
                 } catch (
-                error
+                    error
                 ) {
+
                     console.log(
                         error
                     );
@@ -389,6 +460,7 @@ const MyAppointment =
 
         const closePrescriptionModal =
             () => {
+
                 setShowPrescriptionModal(
                     false
                 );
@@ -396,28 +468,6 @@ const MyAppointment =
                 setSelectedAppointment(
                     null
                 );
-
-                setMedicines([
-                    {
-                        medicine:
-                            "",
-
-                        time: [],
-
-                        duration:
-                            "",
-                    },
-                ]);
-
-                setTests([
-                    {
-                        testName:
-                            "",
-
-                        comment:
-                            "",
-                    },
-                ]);
             };
 
         // =====================================
@@ -430,6 +480,7 @@ const MyAppointment =
                 field,
                 value
             ) => {
+
                 const updated = [
                     ...medicines,
                 ];
@@ -451,6 +502,7 @@ const MyAppointment =
                 index,
                 value
             ) => {
+
                 const updated = [
                     ...medicines,
                 ];
@@ -464,6 +516,7 @@ const MyAppointment =
                         value
                     )
                 ) {
+
                     updated[
                         index
                     ].time =
@@ -474,7 +527,9 @@ const MyAppointment =
                                 item !==
                                 value
                         );
+
                 } else {
+
                     updated[
                         index
                     ].time = [
@@ -494,6 +549,7 @@ const MyAppointment =
 
         const addMedicine =
             () => {
+
                 setMedicines([
                     ...medicines,
 
@@ -510,6 +566,43 @@ const MyAppointment =
             };
 
         // =====================================
+        // DELETE MEDICINE
+        // =====================================
+
+        const deleteMedicine =
+            (
+                index
+            ) => {
+
+                const updated =
+                    medicines.filter(
+                        (
+                            _,
+                            i
+                        ) =>
+                            i !==
+                            index
+                    );
+
+                setMedicines(
+                    updated.length >
+                    0
+                        ? updated
+                        : [
+                            {
+                                medicine:
+                                    "",
+
+                                time: [],
+
+                                duration:
+                                    "",
+                            },
+                        ]
+                );
+            };
+
+        // =====================================
         // TEST CHANGE
         // =====================================
 
@@ -519,6 +612,7 @@ const MyAppointment =
                 field,
                 value
             ) => {
+
                 const updated = [
                     ...tests,
                 ];
@@ -537,6 +631,7 @@ const MyAppointment =
 
         const addTest =
             () => {
+
                 setTests([
                     ...tests,
 
@@ -551,12 +646,49 @@ const MyAppointment =
             };
 
         // =====================================
+        // DELETE TEST
+        // =====================================
+
+        const deleteTest =
+            (
+                index
+            ) => {
+
+                const updated =
+                    tests.filter(
+                        (
+                            _,
+                            i
+                        ) =>
+                            i !==
+                            index
+                    );
+
+                setTests(
+                    updated.length >
+                    0
+                        ? updated
+                        : [
+                            {
+                                testName:
+                                    "",
+
+                                comment:
+                                    "",
+                            },
+                        ]
+                );
+            };
+
+        // =====================================
         // SAVE PRESCRIPTION
         // =====================================
 
         const handleSavePrescription =
             async () => {
+
                 try {
+
                     const hasPrescription =
                         selectedAppointment?.hasPrescription;
 
@@ -601,6 +733,7 @@ const MyAppointment =
                     if (
                         result.success
                     ) {
+
                         alert(
                             hasPrescription
                                 ? "Prescription Updated Successfully"
@@ -610,14 +743,12 @@ const MyAppointment =
                         closePrescriptionModal();
 
                         fetchAppointments();
-                    } else {
-                        alert(
-                            result.message
-                        );
                     }
+
                 } catch (
-                error
+                    error
                 ) {
+
                     console.log(
                         error
                     );
@@ -629,6 +760,7 @@ const MyAppointment =
         // =====================================
 
         if (loading) {
+
             return (
                 <div className="min-h-screen flex justify-center items-center text-2xl font-bold text-blue-600">
                     Loading...
@@ -638,32 +770,29 @@ const MyAppointment =
 
         return (
             <div className="min-h-screen bg-blue-50 p-6">
+
                 {/* HEADER */}
 
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-10">
+
                     <div>
+
                         <h2 className="text-4xl font-black text-slate-800 mb-2">
                             My
                             Appointments
                         </h2>
 
                         <p className="text-slate-500 text-lg">
-                            View all
-                            patient
-                            appointments
+                            Manage patient appointments
                         </p>
                     </div>
 
-                    {/* FILTER */}
-
                     <div className="flex flex-wrap items-center gap-3">
+
                         {[
                             "All",
-
                             "Today",
-
                             "This Week",
-
                             "This Month",
                         ].map(
                             (
@@ -678,11 +807,12 @@ const MyAppointment =
                                             item
                                         )
                                     }
-                                    className={`px-6 py-3 rounded-2xl font-bold transition ${filter ===
+                                    className={`px-6 py-3 rounded-2xl font-bold transition ${
+                                        filter ===
                                         item
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-white text-slate-700 border border-blue-100 hover:bg-blue-50"
-                                        }`}
+                                            ? "bg-blue-600 text-white"
+                                            : "bg-white text-slate-700 border border-blue-100"
+                                    }`}
                                 >
                                     {
                                         item
@@ -695,125 +825,99 @@ const MyAppointment =
 
                 {/* TABLE */}
 
-                <div className="bg-white border border-blue-100 rounded-[40px] shadow-sm">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-blue-600 text-white">
-                                <tr>
-                                    <th className="px-6 py-5 text-left">
-                                        Patient
-                                    </th>
+                <div className="bg-white rounded-[40px] border border-blue-100 overflow-x-auto">
 
-                                    <th className="px-6 py-5 text-left">
-                                        Email
-                                    </th>
+                    <table className="w-full">
 
-                                    <th className="px-6 py-5 text-left">
-                                        Date
-                                    </th>
+                        <thead className="bg-blue-600 text-white">
 
-                                    <th className="px-6 py-5 text-left">
-                                        Time
-                                    </th>
+                            <tr>
 
-                                    <th className="px-6 py-5 text-left">
-                                        Serial
-                                    </th>
+                                <th className="px-6 py-5 text-left">
+                                    Patient
+                                </th>
 
-                                    <th className="px-6 py-5 text-left">
-                                        Payment
-                                    </th>
+                                <th className="px-6 py-5 text-left">
+                                    Date
+                                </th>
 
-                                    <th className="px-6 py-5 text-left">
-                                        Status
-                                    </th>
+                                <th className="px-6 py-5 text-left">
+                                    Time
+                                </th>
 
-                                    <th className="px-6 py-5 text-left">
-                                        Prescription
-                                    </th>
-                                </tr>
-                            </thead>
+                                <th className="px-6 py-5 text-left">
+                                    Payment
+                                </th>
 
-                            <tbody>
-                                {filteredAppointments.map(
-                                    (
-                                        item,
-                                        index
-                                    ) => (
-                                        <tr
-                                            key={
-                                                item._id
-                                            }
-                                            className={`border-b border-blue-50 ${index %
-                                                2 ===
-                                                0
+                                <th className="px-6 py-5 text-left">
+                                    Status
+                                </th>
+
+                                <th className="px-6 py-5 text-left">
+                                    Prescription
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {filteredAppointments.map(
+                                (
+                                    item,
+                                    index
+                                ) => (
+
+                                    <tr
+                                        key={
+                                            item._id
+                                        }
+                                        className={`border-b border-blue-50 ${
+                                            index %
+                                            2 ===
+                                            0
                                                 ? "bg-white"
                                                 : "bg-blue-50/40"
-                                                }`}
-                                        >
-                                            <td className="px-6 py-5">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-black uppercase">
-                                                        {
-                                                            item
-                                                                ?.patient
-                                                                ?.user
-                                                                ?.name?.[0]
-                                                        }
-                                                    </div>
+                                        }`}
+                                    >
 
-                                                    <h4 className="font-black text-slate-800">
-                                                        {
-                                                            item
-                                                                ?.patient
-                                                                ?.user
-                                                                ?.name
-                                                        }
-                                                    </h4>
-                                                </div>
-                                            </td>
+                                        <td className="px-6 py-5 font-bold text-slate-700">
+                                            {
+                                                item
+                                                    ?.patient
+                                                    ?.user
+                                                    ?.name
+                                            }
+                                        </td>
 
-                                            <td className="px-6 py-5 font-semibold text-slate-700">
+                                        <td className="px-6 py-5">
+                                            {
+                                                item?.appointmentDate
+                                            }
+                                        </td>
+
+                                        <td className="px-6 py-5">
+                                            {
+                                                item?.appointmentTime
+                                            }
+                                        </td>
+
+                                        <td className="px-6 py-5">
+
+                                            <span
+                                                className={`px-4 py-2 rounded-2xl text-sm font-bold ${getPaymentStyle(
+                                                    item?.paymentStatus
+                                                )}`}
+                                            >
                                                 {
-                                                    item
-                                                        ?.patient
-                                                        ?.user
-                                                        ?.email
+                                                    item?.paymentStatus
                                                 }
-                                            </td>
+                                            </span>
+                                        </td>
 
-                                            <td className="px-6 py-5">
-                                                {
-                                                    item?.appointmentDate
-                                                }
-                                            </td>
+                                        <td className="px-6 py-5">
 
-                                            <td className="px-6 py-5">
-                                                {
-                                                    item?.appointmentTime
-                                                }
-                                            </td>
+                                            <div className="flex items-center gap-3">
 
-                                            <td className="px-6 py-5 font-bold">
-                                                #
-                                                {
-                                                    item?.serialNumber
-                                                }
-                                            </td>
-
-                                            <td className="px-6 py-5">
-                                                <span
-                                                    className={`px-4 py-2 rounded-2xl text-sm font-bold ${getPaymentStyle(
-                                                        item?.paymentStatus
-                                                    )}`}
-                                                >
-                                                    {
-                                                        item?.paymentStatus
-                                                    }
-                                                </span>
-                                            </td>
-
-                                            <td className="px-6 py-5">
                                                 <span
                                                     className={`px-4 py-2 rounded-2xl text-sm font-bold ${getStatusStyle(
                                                         item?.status
@@ -823,48 +927,68 @@ const MyAppointment =
                                                         item?.status
                                                     }
                                                 </span>
-                                            </td>
 
-                                            <td className="px-6 py-5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        openPrescriptionModal(
-                                                            item
-                                                        )
-                                                    }
-                                                    className={`px-5 py-2 rounded-2xl font-bold transition ${item?.hasPrescription
-                                                        ? "bg-yellow-500 hover:bg-yellow-600 text-white"
-                                                        : "bg-blue-600 hover:bg-blue-700 text-white"
-                                                        }`}
-                                                >
-                                                    {item?.hasPrescription
-                                                        ? "Edit"
-                                                        : "Add"}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    )
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                                {item?.status ===
+                                                    "Confirmed" && (
+                                                    <button
+                                                        onClick={() =>
+                                                            markVisited(
+                                                                item?._id
+                                                            )
+                                                        }
+                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold"
+                                                    >
+                                                        Mark
+                                                        Visited
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+
+                                        <td className="px-6 py-5">
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    openPrescriptionModal(
+                                                        item
+                                                    )
+                                                }
+                                                className={`px-5 py-2 rounded-2xl font-bold transition ${
+                                                    item?.hasPrescription
+                                                        ? "bg-yellow-500 text-white"
+                                                        : "bg-blue-600 text-white"
+                                                }`}
+                                            >
+                                                {item?.hasPrescription
+                                                    ? "Edit"
+                                                    : "Add"}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                            )}
+                        </tbody>
+                    </table>
                 </div>
 
                 {/* MODAL */}
 
                 {showPrescriptionModal && (
-                    <div className="fixed inset-0 z-[9999] bg-black/40 flex justify-center items-center p-5 overflow-y-auto">
+
+                    <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center p-5">
+
                         <div className="w-full max-w-6xl bg-white rounded-[40px] p-8 max-h-[95vh] overflow-y-auto">
-                            <div className="flex items-center justify-between mb-10">
+
+                            <div className="flex items-center justify-between mb-8">
+
                                 <div>
-                                    <h2 className="text-4xl font-black text-slate-800 mb-2">
-                                        {selectedAppointment?.hasPrescription
-                                            ? "Edit Prescription"
-                                            : "Add Prescription"}
+
+                                    <h2 className="text-4xl font-black text-slate-800">
+                                        Prescription
                                     </h2>
 
-                                    <p className="text-slate-500 font-semibold">
+                                    <p className="text-slate-500 font-semibold mt-2">
                                         {
                                             selectedAppointment
                                                 ?.patient
@@ -875,52 +999,55 @@ const MyAppointment =
                                 </div>
 
                                 <button
-                                    type="button"
                                     onClick={
                                         closePrescriptionModal
                                     }
-                                    className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 text-xl font-black"
+                                    className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 text-2xl font-black"
                                 >
                                     ×
                                 </button>
                             </div>
 
-                            {/* MEDICINE SECTION */}
+                            {/* MEDICINES */}
 
-                            <div className="bg-blue-50 border border-blue-100 rounded-[40px] p-8 mb-8">
+                            <div className="bg-blue-50 rounded-[35px] p-8 mb-8">
+
                                 <div className="flex items-center justify-between mb-8">
+
                                     <h3 className="text-3xl font-black text-slate-800">
                                         Medicines
                                     </h3>
 
                                     <button
-                                        type="button"
                                         onClick={
                                             addMedicine
                                         }
                                         className="bg-blue-600 text-white px-5 py-3 rounded-2xl font-bold"
                                     >
-                                        Add
-                                        Medicine
+                                        Add Medicine
                                     </button>
                                 </div>
 
-                                <div className="space-y-6">
+                                <div className="space-y-5">
+
                                     {medicines.map(
                                         (
                                             item,
                                             index
                                         ) => (
+
                                             <div
                                                 key={
                                                     index
                                                 }
-                                                className="bg-white rounded-3xl border border-blue-100 p-6"
+                                                className="bg-white border border-blue-100 rounded-3xl p-6"
                                             >
+
                                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
                                                     <input
                                                         type="text"
-                                                        placeholder="Medicine name"
+                                                        placeholder="Medicine"
                                                         value={
                                                             item.medicine
                                                         }
@@ -935,7 +1062,7 @@ const MyAppointment =
                                                                     .value
                                                             )
                                                         }
-                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100 outline-none"
+                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100"
                                                     />
 
                                                     <input
@@ -955,22 +1082,21 @@ const MyAppointment =
                                                                     .value
                                                             )
                                                         }
-                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100 outline-none"
+                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100"
                                                     />
 
                                                     <div className="flex flex-wrap gap-3">
+
                                                         {[
                                                             "Morning",
-
                                                             "Afternoon",
-
                                                             "Evening",
-
                                                             "Night",
                                                         ].map(
                                                             (
                                                                 time
                                                             ) => (
+
                                                                 <button
                                                                     key={
                                                                         time
@@ -982,12 +1108,13 @@ const MyAppointment =
                                                                             time
                                                                         )
                                                                     }
-                                                                    className={`px-4 py-2 rounded-2xl font-semibold ${item.time.includes(
-                                                                        time
-                                                                    )
-                                                                        ? "bg-blue-600 text-white"
-                                                                        : "bg-white border border-blue-100 text-slate-700"
-                                                                        }`}
+                                                                    className={`px-4 py-2 rounded-2xl font-semibold ${
+                                                                        item.time.includes(
+                                                                            time
+                                                                        )
+                                                                            ? "bg-blue-600 text-white"
+                                                                            : "bg-white border border-blue-100"
+                                                                    }`}
                                                                 >
                                                                     {
                                                                         time
@@ -997,46 +1124,59 @@ const MyAppointment =
                                                         )}
                                                     </div>
                                                 </div>
+
+                                                <button
+                                                    onClick={() =>
+                                                        deleteMedicine(
+                                                            index
+                                                        )
+                                                    }
+                                                    className="mt-5 bg-red-100 text-red-600 px-5 py-3 rounded-2xl font-bold"
+                                                >
+                                                    Delete Medicine
+                                                </button>
                                             </div>
                                         )
                                     )}
                                 </div>
                             </div>
 
-                            {/* TEST SECTION */}
+                            {/* TESTS */}
 
-                            <div className="bg-blue-50 border border-blue-100 rounded-[40px] p-8 mb-8">
+                            <div className="bg-blue-50 rounded-[35px] p-8 mb-8">
+
                                 <div className="flex items-center justify-between mb-8">
+
                                     <h3 className="text-3xl font-black text-slate-800">
                                         Tests
                                     </h3>
 
                                     <button
-                                        type="button"
                                         onClick={
                                             addTest
                                         }
                                         className="bg-blue-600 text-white px-5 py-3 rounded-2xl font-bold"
                                     >
-                                        Add
-                                        Test
+                                        Add Test
                                     </button>
                                 </div>
 
-                                <div className="space-y-6">
+                                <div className="space-y-5">
+
                                     {tests.map(
                                         (
                                             item,
                                             index
                                         ) => (
+
                                             <div
                                                 key={
                                                     index
                                                 }
-                                                className="bg-white rounded-3xl border border-blue-100 p-6"
+                                                className="bg-white border border-blue-100 rounded-3xl p-6"
                                             >
+
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                                                    {/* TEST */}
 
                                                     <select
                                                         value={
@@ -1053,17 +1193,18 @@ const MyAppointment =
                                                                     .value
                                                             )
                                                         }
-                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100 outline-none"
+                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100"
                                                     >
+
                                                         <option value="">
-                                                            Select
-                                                            Test
+                                                            Select Test
                                                         </option>
 
                                                         {allTests.map(
                                                             (
                                                                 test
                                                             ) => (
+
                                                                 <option
                                                                     key={
                                                                         test.id
@@ -1084,8 +1225,6 @@ const MyAppointment =
                                                         )}
                                                     </select>
 
-                                                    {/* COMMENT */}
-
                                                     <input
                                                         type="text"
                                                         placeholder="Comment"
@@ -1103,29 +1242,20 @@ const MyAppointment =
                                                                     .value
                                                             )
                                                         }
-                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100 outline-none"
+                                                        className="w-full h-14 px-5 rounded-2xl border border-blue-100"
                                                     />
                                                 </div>
 
-                                                {/* PRICE */}
-
-                                                {item.testName && (
-                                                    <div className="mt-4">
-                                                        <span className="bg-purple-100 text-purple-600 px-4 py-2 rounded-2xl font-bold">
-                                                            Price:
-                                                            ৳{" "}
-                                                            {allTests.find(
-                                                                (
-                                                                    test
-                                                                ) =>
-                                                                    test.name ===
-                                                                    item.testName
-                                                            )
-                                                                ?.price ||
-                                                                0}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                <button
+                                                    onClick={() =>
+                                                        deleteTest(
+                                                            index
+                                                        )
+                                                    }
+                                                    className="mt-5 bg-red-100 text-red-600 px-5 py-3 rounded-2xl font-bold"
+                                                >
+                                                    Delete Test
+                                                </button>
                                             </div>
                                         )
                                     )}
@@ -1135,14 +1265,12 @@ const MyAppointment =
                             {/* SAVE */}
 
                             <button
-                                type="button"
                                 onClick={
                                     handleSavePrescription
                                 }
                                 className="w-full h-16 rounded-3xl bg-blue-600 hover:bg-blue-700 text-white text-xl font-black"
                             >
-                                Save
-                                Prescription
+                                Save Prescription
                             </button>
                         </div>
                     </div>

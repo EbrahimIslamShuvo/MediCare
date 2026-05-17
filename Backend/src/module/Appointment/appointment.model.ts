@@ -3,88 +3,103 @@
 // ======================================
 
 import {
-    Schema,
-    model,
+  Schema,
+  model,
 } from "mongoose";
 
-import type { IAppointment } from "./appointment.interface";
+import type {
+  IAppointment,
+} from "./appointment.interface";
 
 const appointmentSchema =
-    new Schema<IAppointment>(
-        {
-            patient: {
-                type:
-                    Schema.Types.ObjectId,
+  new Schema<IAppointment>(
+    {
+      patient: {
+        type:
+          Schema.Types.ObjectId,
 
-                ref: "Patient",
+        ref: "Patient",
 
-                required: true,
-            },
+        required: true,
+      },
 
-            doctor: {
-                type:
-                    Schema.Types.ObjectId,
+      doctor: {
+        type:
+          Schema.Types.ObjectId,
 
-                ref: "Doctor",
+        ref: "Doctor",
 
-                required: true,
-            },
+        required: true,
+      },
 
-            appointmentDate: {
-                type: String,
+      appointmentDate: {
+        type: String,
 
-                required: true,
-            },
+        required: true,
+      },
 
-            serialNumber: {
-                type: Number,
+      serialNumber: {
+        type: Number,
 
-                required: true,
-            },
+        required: true,
+      },
 
-            appointmentTime: {
-                type: String,
+      appointmentTime: {
+        type: String,
 
-                required: true,
-            },
+        required: true,
+      },
 
-            paymentStatus: {
-                type: String,
+      paymentStatus: {
+        type: String,
 
-                enum: [
-                    "Pending",
-                    "Paid",
-                    "Failed",
-                ],
+        enum: [
+          "Pending",
+          "Paid",
+          "Failed",
+        ],
 
-                default: "Pending",
-            },
+        default:
+          "Pending",
+      },
 
-            status: {
-                type: String,
+      status: {
+        type: String,
 
-                enum: [
-                    "Pending",
-                    "Confirmed",
-                    "Cancelled",
-                ],
+        enum: [
+          "Pending",
+          "Confirmed",
+          "Visited",
+          "Completed",
+          "Cancelled",
+        ],
 
-                default: "Pending",
-            },
+        default:
+          "Pending",
+      },
 
-            expiresAt: {
-                type: Date,
-            },
-        },
+      expiresAt: {
+        type: Date,
 
-        {
-            timestamps: true,
-        }
-    );
+        default: () =>
+          new Date(
+            Date.now() +
+              10 *
+                60 *
+                1000
+          ),
+      },
+    },
 
-const Appointment = model<IAppointment>(
+    {
+      timestamps: true,
+    }
+  );
+
+const Appointment =
+  model<IAppointment>(
     "Appointment",
     appointmentSchema
-);
+  );
 
 export default Appointment;

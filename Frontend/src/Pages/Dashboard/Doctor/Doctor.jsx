@@ -5,13 +5,11 @@ import React, {
 
 import {
     CalendarDays,
-    Clock3,
     Users,
     FileText,
     FlaskConical,
     Activity,
     CheckCircle2,
-    XCircle,
 } from "lucide-react";
 
 const Doctor = () => {
@@ -161,24 +159,43 @@ const Doctor = () => {
     // STATS
     // =====================================
 
+    // CONFIRMED + VISITED
+
     const totalAppointments =
-        appointments.length;
+        appointments.filter(
+            (item) =>
+                item?.status ===
+                "Confirmed" ||
+                item?.status ===
+                "Visited"
+        ).length;
+
+    // VISITED ONLY
 
     const completedAppointments =
         appointments.filter(
             (item) =>
                 item?.status ===
-                "Completed"
+                "Visited"
         ).length;
 
+    // UNIQUE PATIENTS
 
     const totalPatients =
         [
             ...new Set(
-                appointments.map(
-                    (item) =>
-                        item?.patient?._id
-                )
+                appointments
+                    .filter(
+                        (item) =>
+                            item?.status ===
+                            "Confirmed" ||
+                            item?.status ===
+                            "Visited"
+                    )
+                    .map(
+                        (item) =>
+                            item?.patient?._id
+                    )
             ),
         ].length;
 
@@ -251,13 +268,12 @@ const Doctor = () => {
                         icon={
                             <CheckCircle2 size={32} />
                         }
-                        title="Completed"
+                        title="Visited"
                         value={
                             completedAppointments
                         }
                         bg="bg-purple-600"
                     />
-
                 </div>
 
                 {/* ================================= */}
@@ -347,6 +363,103 @@ const Doctor = () => {
                                 />
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* ================================= */}
+                {/* RECENT APPOINTMENTS */}
+                {/* ================================= */}
+
+                <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm mb-10">
+
+                    <div className="flex items-center gap-3 mb-6">
+
+                        <CalendarDays className="text-blue-600" />
+
+                        <h2 className="text-3xl font-black text-slate-800">
+                            Recent Appointments
+                        </h2>
+                    </div>
+
+                    <div className="overflow-x-auto">
+
+                        <table className="w-full">
+
+                            <thead>
+
+                                <tr className="border-b border-slate-200">
+
+                                    <th className="text-left py-4 font-black text-slate-700">
+                                        Patient
+                                    </th>
+
+                                    <th className="text-left py-4 font-black text-slate-700">
+                                        Date
+                                    </th>
+
+                                    <th className="text-left py-4 font-black text-slate-700">
+                                        Time
+                                    </th>
+
+                                    <th className="text-left py-4 font-black text-slate-700">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {appointments
+                                    .slice(0, 5)
+                                    .map(
+                                        (
+                                            item
+                                        ) => (
+
+                                            <tr
+                                                key={
+                                                    item?._id
+                                                }
+                                                className="border-b border-slate-100"
+                                            >
+
+                                                <td className="py-4 font-semibold text-slate-700">
+                                                    {
+                                                        item?.patient?.user?.name
+                                                    }
+                                                </td>
+
+                                                <td className="py-4 text-slate-600">
+                                                    {
+                                                        item?.appointmentDate
+                                                    }
+                                                </td>
+
+                                                <td className="py-4 text-slate-600">
+                                                    {
+                                                        item?.appointmentTime
+                                                    }
+                                                </td>
+
+                                                <td className="py-4">
+
+                                                    <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                                                        item?.status ===
+                                                        "Visited"
+                                                            ? "bg-green-100 text-green-700"
+                                                            : "bg-blue-100 text-blue-700"
+                                                    }`}>
+
+                                                        {
+                                                            item?.status
+                                                        }
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )
+                                    )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 

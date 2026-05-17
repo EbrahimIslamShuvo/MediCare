@@ -11,6 +11,33 @@ import Patient from "../Patient/patient.model";
 import Prescription from "../Prescription/prescription.model";
 
 // ======================================
+// AUTO CANCEL EXPIRED
+// ======================================
+
+const cancelExpiredAppointments =
+  async () => {
+
+    await Appointment.updateMany(
+      {
+        paymentStatus:
+          "Pending",
+
+        status:
+          "Pending",
+
+        expiresAt: {
+          $lt: new Date(),
+        },
+      },
+
+      {
+        status:
+          "Cancelled",
+      }
+    );
+  };
+
+// ======================================
 // CREATE APPOINTMENT
 // ======================================
 
@@ -19,6 +46,7 @@ const createAppointment =
     userId: string,
     payload: any
   ) => {
+
     const {
       doctorId,
       appointmentDate,
@@ -32,6 +60,7 @@ const createAppointment =
       });
 
     if (!patient) {
+
       throw new Error(
         "Patient not found"
       );
@@ -45,6 +74,7 @@ const createAppointment =
       );
 
     if (!doctor) {
+
       throw new Error(
         "Doctor not found"
       );
@@ -98,6 +128,7 @@ const createAppointment =
       existingAppointments.length >=
       totalSlots
     ) {
+
       throw new Error(
         "No slot available"
       );
@@ -112,8 +143,7 @@ const createAppointment =
     // TIME
 
     const appointmentTime = `${start}:${
-      serialNumber *
-      20
+      serialNumber * 20
     }`;
 
     // CREATE
@@ -158,6 +188,9 @@ const createAppointment =
 
 const getAllAppointments =
   async () => {
+
+    await cancelExpiredAppointments();
+
     return await Appointment.find()
       .populate({
         path: "doctor",
@@ -186,12 +219,16 @@ const getMyAppointments =
   async (
     userId: string
   ) => {
+
+    await cancelExpiredAppointments();
+
     const patient =
       await Patient.findOne({
         user: userId,
       });
 
     if (!patient) {
+
       throw new Error(
         "Patient not found"
       );
@@ -223,7 +260,8 @@ const getDoctorAppointments =
   async (
     userId: string
   ) => {
-    // FIND DOCTOR
+
+    await cancelExpiredAppointments();
 
     const doctor =
       await Doctor.findOne({
@@ -231,12 +269,11 @@ const getDoctorAppointments =
       });
 
     if (!doctor) {
+
       throw new Error(
         "Doctor not found"
       );
     }
-
-    // FIND APPOINTMENTS
 
     const appointments =
       await Appointment.find(
@@ -256,14 +293,13 @@ const getDoctorAppointments =
           createdAt: -1,
         });
 
-    // CHECK PRESCRIPTION
-
     const updatedAppointments =
       await Promise.all(
         appointments.map(
           async (
             appointment: any
           ) => {
+
             const prescription =
               await Prescription.findOne(
                 {
@@ -291,6 +327,9 @@ const getDoctorAppointments =
 
 const getAllAppointmentsForStaff =
   async () => {
+
+    await cancelExpiredAppointments();
+
     return await Appointment.find()
       .populate({
         path: "doctor",
@@ -319,8 +358,10 @@ const confirmPayment =
   async (
     id: string
   ) => {
+
     return await Appointment.findByIdAndUpdate(
       id,
+
       {
         paymentStatus:
           "Paid",
@@ -328,6 +369,53 @@ const confirmPayment =
         status:
           "Confirmed",
       },
+
+      {
+        new: true,
+      }
+    );
+  };
+
+// ======================================
+// MARK VISITED
+// ======================================
+
+const markVisited =
+  async (
+    id: string
+  ) => {
+
+    return await Appointment.findByIdAndUpdate(
+      id,
+
+      {
+        status:
+          "Visited",
+      },
+
+      {
+        new: true,
+      }
+    );
+  };
+
+// ======================================
+// COMPLETE APPOINTMENT
+// ======================================
+
+const completeAppointment =
+  async (
+    id: string
+  ) => {
+
+    return await Appointment.findByIdAndUpdate(
+      id,
+
+      {
+        status:
+          "Completed",
+      },
+
       {
         new: true,
       }
@@ -347,4 +435,8 @@ export const AppointmentServices =
     getAllAppointmentsForStaff,
 
     confirmPayment,
+
+    markVisited,
+
+    completeAppointment,
   };

@@ -4,35 +4,15 @@
 
 import { Types } from "mongoose";
 
-export type TNurseStatus =
-  | "Active"
-  | "On Leave"
-  | "Inactive";
-
 export interface INurse {
-  user: Types.ObjectId;
 
-  phone?: string;
+    user: Types.ObjectId;
 
-  gender?:
-    | "Male"
-    | "Female"
-    | "Other";
+    phone?: string;
 
-  department?: string;
+    address?: string;
 
-  shift?:
-    | "Morning"
-    | "Evening"
-    | "Night";
+    createdAt?: Date;
 
-  experience?: number;
-
-  qualification?: string[];
-
-  address?: string;
-
-  emergencyContact?: string;
-
-  status?: TNurseStatus;
+    updatedAt?: Date;
 }

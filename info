@@ -9,9 +9,13 @@ pass:e5d94023
 
 
 receptionist:
-email:noval74190@hidevak.com
-password:39d15737
+    email:noval74190@hidevak.com
+    password:39d15737
 
 doctor:
 
 password:0d322493
+
+nurse:
+    email:vobivig434@hidevak.com
+    password:c5d3682e

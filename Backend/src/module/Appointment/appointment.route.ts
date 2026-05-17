@@ -9,58 +9,60 @@ import { AppointmentControllers } from "./appointment.controller";
 const router =
   express.Router();
 
-// ======================================
-// CREATE APPOINTMENT
-// ======================================
+// CREATE
 
 router.post(
   "/",
   AppointmentControllers.createAppointment
 );
 
-// ======================================
-// GET ALL APPOINTMENTS
-// ======================================
+// GET ALL
 
 router.get(
   "/",
   AppointmentControllers.getAllAppointments
 );
 
-// ======================================
-// PATIENT APPOINTMENTS
-// ======================================
+// MY
 
 router.get(
   "/my/:userId",
   AppointmentControllers.getMyAppointments
 );
 
-// ======================================
-// DOCTOR APPOINTMENTS
-// ======================================
+// DOCTOR
 
 router.get(
   "/doctor/:userId",
   AppointmentControllers.getDoctorAppointments
 );
 
-// ======================================
-// STAFF ALL APPOINTMENTS
-// ======================================
+// STAFF
 
 router.get(
   "/staff/all",
   AppointmentControllers.getAllAppointmentsForStaff
 );
 
-// ======================================
-// CONFIRM PAYMENT
-// ======================================
+// PAYMENT
 
 router.patch(
   "/confirm-payment/:id",
   AppointmentControllers.confirmPayment
+);
+
+// VISITED
+
+router.patch(
+  "/visited/:id",
+  AppointmentControllers.markVisited
+);
+
+// COMPLETE
+
+router.patch(
+  "/complete/:id",
+  AppointmentControllers.completeAppointment
 );
 
 export const AppointmentRoutes =

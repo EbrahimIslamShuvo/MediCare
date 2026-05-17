@@ -1,19 +1,15 @@
-// ======================================
-// nurse.controller.ts
-// ======================================
-
 import type {
     Request,
     Response,
 } from "express";
 
-import {
-    NurseServices,
-} from "./nurse.service";
+import { RoomServices } from "./room.service";
 
-// CREATE
+// ======================================
+// CREATE ROOM
+// ======================================
 
-const createNurse =
+const createRoom =
     async (
         req: Request,
         res: Response
@@ -22,19 +18,20 @@ const createNurse =
         try {
 
             const result =
-                await NurseServices.createNurse(
+                await RoomServices.createRoom(
                     req.body
                 );
 
             res.status(201).json({
                 success: true,
 
+                message:
+                    "Room created successfully",
+
                 data: result,
             });
 
-        } catch (
-            error: any
-        ) {
+        } catch (error: any) {
 
             res.status(400).json({
                 success: false,
@@ -45,9 +42,11 @@ const createNurse =
         }
     };
 
-// GET ALL
+// ======================================
+// GET ALL ROOMS
+// ======================================
 
-const getAllNurses =
+const getAllRooms =
     async (
         req: Request,
         res: Response
@@ -56,7 +55,7 @@ const getAllNurses =
         try {
 
             const result =
-                await NurseServices.getAllNurses();
+                await RoomServices.getAllRooms();
 
             res.status(200).json({
                 success: true,
@@ -64,9 +63,7 @@ const getAllNurses =
                 data: result,
             });
 
-        } catch (
-            error: any
-        ) {
+        } catch (error: any) {
 
             res.status(400).json({
                 success: false,
@@ -77,9 +74,11 @@ const getAllNurses =
         }
     };
 
-// GET SINGLE
+// ======================================
+// GET SINGLE ROOM
+// ======================================
 
-const getSingleNurse =
+const getSingleRoom =
     async (
         req: Request,
         res: Response
@@ -88,7 +87,7 @@ const getSingleNurse =
         try {
 
             const result =
-                await NurseServices.getSingleNurse(
+                await RoomServices.getSingleRoom(
                     req.params.id as string
                 );
 
@@ -98,9 +97,7 @@ const getSingleNurse =
                 data: result,
             });
 
-        } catch (
-            error: any
-        ) {
+        } catch (error: any) {
 
             res.status(400).json({
                 success: false,
@@ -111,9 +108,11 @@ const getSingleNurse =
         }
     };
 
-// UPDATE
+// ======================================
+// UPDATE ROOM
+// ======================================
 
-const updateNurse =
+const updateRoom =
     async (
         req: Request,
         res: Response
@@ -122,7 +121,7 @@ const updateNurse =
         try {
 
             const result =
-                await NurseServices.updateNurse(
+                await RoomServices.updateRoom(
                     req.params.id as string,
                     req.body
                 );
@@ -130,12 +129,13 @@ const updateNurse =
             res.status(200).json({
                 success: true,
 
+                message:
+                    "Room updated successfully",
+
                 data: result,
             });
 
-        } catch (
-            error: any
-        ) {
+        } catch (error: any) {
 
             res.status(400).json({
                 success: false,
@@ -146,9 +146,11 @@ const updateNurse =
         }
     };
 
-// DELETE
+// ======================================
+// DELETE ROOM
+// ======================================
 
-const deleteNurse =
+const deleteRoom =
     async (
         req: Request,
         res: Response
@@ -156,20 +158,18 @@ const deleteNurse =
 
         try {
 
-            const result =
-                await NurseServices.deleteNurse(
-                    req.params.id as string
-                );
+            await RoomServices.deleteRoom(
+                req.params.id as string
+            );
 
             res.status(200).json({
                 success: true,
 
-                data: result,
+                message:
+                    "Room deleted successfully",
             });
 
-        } catch (
-            error: any
-        ) {
+        } catch (error: any) {
 
             res.status(400).json({
                 success: false,
@@ -180,15 +180,15 @@ const deleteNurse =
         }
     };
 
-export const NurseControllers =
+export const RoomControllers =
 {
-    createNurse,
+    createRoom,
 
-    getAllNurses,
+    getAllRooms,
 
-    getSingleNurse,
+    getSingleRoom,
 
-    updateNurse,
+    updateRoom,
 
-    deleteNurse,
+    deleteRoom,
 };

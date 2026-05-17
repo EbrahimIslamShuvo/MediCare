@@ -69,7 +69,6 @@ import MyPatient from "./Pages/Dashboard/Doctor/Pages/MyPatient";
 import MyAppointment from "./Pages/Dashboard/Doctor/Pages/MyAppointment";
 import MyPrescription from "./Pages/Dashboard/Doctor/Pages/MyPrescription";
 import MyLabReport from "./Pages/Dashboard/Doctor/Pages/MyLabReport";
-import MySchedule from "./Pages/Dashboard/Doctor/Pages/MySchedule";
 import DoctorProfile from "./Pages/Dashboard/Doctor/Pages/DoctorProfile";
 import About from "./Pages/Website/About/About";
 import AllDoctor from "./Pages/Website/Doctor/AllDoctor";
@@ -86,6 +85,11 @@ import AmbulanceReceptionist from "./Pages/Dashboard/Receptionist/Pages/Ambulanc
 import LaboratoryReceptionist from "./Pages/Dashboard/Receptionist/Pages/LaboratoryReceptionist";
 import ProfileReceptionist from "./Pages/Dashboard/Receptionist/Pages/ProfileReceptionist";
 import Service from "./Pages/Website/Service/Service";
+import PatientAdmit from "./Pages/Dashboard/Doctor/Pages/PatientAdmit";
+import PatientCare from "./Pages/Dashboard/Nurse/Pages/PatientCare";
+import LogAndReports from "./Pages/Dashboard/Nurse/Pages/LogAndReports";
+import NurseProfile from "./Pages/Dashboard/Nurse/Pages/NurseProfile";
+import PatientMedicalHistory from "./Pages/Dashboard/Patient/Pages/PatientMedicalHistory";
 
 // =====================================
 // ROUTER
@@ -305,11 +309,11 @@ const router =
           ),
         },
         {
-          path: "doctor/schedule",
+          path: "doctor/admit",
 
           element: (
             <DoctorRoute>
-              <MySchedule />
+              <PatientAdmit />
             </DoctorRoute>
           ),
         },
@@ -342,6 +346,15 @@ const router =
           element: (
             <PatientRoute>
               <Doctors />
+            </PatientRoute>
+          ),
+        },
+        {
+          path: "patient/history",
+
+          element: (
+            <PatientRoute>
+              <PatientMedicalHistory />
             </PatientRoute>
           ),
         },
@@ -410,6 +423,33 @@ const router =
           element: (
             <NurseRoute>
               <Nurse />
+            </NurseRoute>
+          ),
+        },
+        {
+          path: "nurse/patient-care",
+
+          element: (
+            <NurseRoute>
+              <PatientCare />
+            </NurseRoute>
+          ),
+        },
+        {
+          path: "nurse/logs",
+
+          element: (
+            <NurseRoute>
+              <LogAndReports />
+            </NurseRoute>
+          ),
+        },
+        {
+          path: "nurse/profile",
+
+          element: (
+            <NurseRoute>
+              <NurseProfile />
             </NurseRoute>
           ),
         },

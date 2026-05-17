@@ -4,126 +4,123 @@
 
 import Nurse from "./nurse.model";
 
-import User from "../User/user.model";
-
-import type { INurse } from "./nurse.interface";
-
 // CREATE NURSE
 
-const createNurse = async (
-  payload: Partial<INurse>
-) => {
-  const result =
-    await Nurse.create(
-      payload
-    );
+const createNurse =
+    async (
+        payload: any
+    ) => {
 
-  return result;
-};
+        return await Nurse.create(
+            payload
+        );
+    };
 
 // GET ALL NURSES
 
 const getAllNurses =
-  async () => {
-    const result =
-      await Nurse.find().populate(
-        "user"
-      );
+    async () => {
 
-    return result;
-  };
+        return await Nurse.find()
+            .populate(
+                "user"
+            )
+            .sort({
+                createdAt: -1,
+            });
+    };
 
 // GET SINGLE NURSE
 
 const getSingleNurse =
-  async (id: string) => {
-    const result =
-      await Nurse.findById(
-        id
-      ).populate("user");
+    async (
+        id: string
+    ) => {
 
-    return result;
-  };
+        return await Nurse.findById(
+            id
+        ).populate(
+            "user"
+        );
+    };
 
 // UPDATE NURSE
 
-const updateNurse = async (
-  id: string,
-  payload: any
-) => {
-  // USER DATA
+const updateNurse =
+    async (
+        id: string,
+        payload: any
+    ) => {
 
-  const userData = {
-    name: payload.name,
+        const nurse =
+            await Nurse.findById(
+                id
+            );
 
-    email: payload.email,
-  };
+        if (!nurse) {
 
-  // NURSE DATA
+            throw new Error(
+                "Nurse not found"
+            );
+        }
 
-  const nurseData = {
-    phone: payload.phone,
+        // UPDATE BASIC INFO
 
-    gender: payload.gender,
+        nurse.phone =
+            payload.phone;
 
-    department:
-      payload.department,
+        nurse.address =
+            payload.address;
 
-    shift: payload.shift,
+        // UPDATE USER INFO
 
-    experience:
-      payload.experience,
+        if (
+            nurse.user &&
+            payload.name
+        ) {
 
-    qualification:
-      payload.qualification,
+            const User =
+                (
+                    await import(
+                        "../User/user.model"
+                    )
+                ).default;
 
-    address:
-      payload.address,
+            await User.findByIdAndUpdate(
+                nurse.user,
+                {
+                    name:
+                        payload.name,
 
-    emergencyContact:
-      payload.emergencyContact,
+                    email:
+                        payload.email,
+                }
+            );
+        }
 
-    status:
-      payload.status,
-  };
+        await nurse.save();
 
-  // FIND NURSE
+        return await Nurse.findById(
+            id
+        ).populate(
+            "user"
+        );
+    };
 
-  const nurse =
-    await Nurse.findById(id);
+// DELETE NURSE
 
-  if (!nurse) {
-    throw new Error(
-      "Nurse not found"
-    );
-  }
+const deleteNurse =
+    async (
+        id: string
+    ) => {
 
-  // UPDATE USER
-
-  await User.findByIdAndUpdate(
-    nurse.user,
-    userData,
-    {
-      new: true,
-    }
-  );
-
-  // UPDATE NURSE
-
-  const result =
-    await Nurse.findByIdAndUpdate(
-      id,
-      nurseData,
-      {
-        new: true,
-      }
-    ).populate("user");
-
-  return result;
-};
+        return await Nurse.findByIdAndDelete(
+            id
+        );
+    };
 
 export const NurseServices =
-  {
+{
     createNurse,
 
     getAllNurses,
@@ -131,4 +128,6 @@ export const NurseServices =
     getSingleNurse,
 
     updateNurse,
-  };
+
+    deleteNurse,
+};
