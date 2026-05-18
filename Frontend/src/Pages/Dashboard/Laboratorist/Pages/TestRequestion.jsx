@@ -6,7 +6,6 @@ import React, {
 import {
     Clock3,
     Activity,
-    FileText,
 } from "lucide-react";
 
 const TestRequestion =
@@ -60,89 +59,164 @@ const TestRequestion =
                         true
                     );
 
-                    const response =
+                    // NORMAL TESTS
+
+                    const labResponse =
+                        await fetch(
+                            "http://127.0.0.1:3000/api/v1/lab-tests"
+                        );
+
+                    const labResult =
+                        await labResponse.json();
+
+                    // ADMIT TESTS
+
+                    const admitResponse =
                         await fetch(
                             "http://127.0.0.1:3000/api/v1/admit-requests"
                         );
 
-                    const result =
-                        await response.json();
+                    const admitResult =
+                        await admitResponse.json();
+
+                    let allTests =
+                        [];
+
+                    // =====================================
+                    // NORMAL TESTS
+                    // =====================================
 
                     if (
-                        result.success
+                        labResult.success
                     ) {
 
-                        const formatted =
+                        const normalTests =
+                            labResult.data.map(
+                                (
+                                    item
+                                ) => ({
+                                    _id:
+                                        item._id,
+
+                                    type:
+                                        "Normal",
+
+                                    patient:
+                                        item.patient,
+
+                                    tests:
+                                        item.tests,
+
+                                    totalAmount:
+                                        item.totalAmount,
+
+                                    status:
+                                        item.status ||
+                                        "Pending",
+
+                                    report:
+                                        item.report ||
+                                        "",
+                                })
+                            );
+
+                        allTests = [
+                            ...allTests,
+                            ...normalTests,
+                        ];
+                    }
+
+                    // =====================================
+                    // ADMIT TESTS
+                    // =====================================
+
+                    if (
+                        admitResult.success
+                    ) {
+
+                        const admitTests =
                             [];
 
-                        result.data.forEach(
+                        admitResult.data.forEach(
                             (
                                 admit
                             ) => {
 
-                                if (
-                                    admit.status ===
-                                    "Admitted"
-                                ) {
+                                admit?.testRequests?.forEach(
+                                    (
+                                        test,
+                                        index
+                                    ) => {
 
-                                    admit.testRequests?.forEach(
-                                        (
-                                            test,
-                                            index
-                                        ) => {
+                                        admitTests.push(
+                                            {
+                                                _id:
+                                                    `${admit._id}-${index}`,
 
-                                            if (
-                                                test.isSent
-                                            ) {
+                                                type:
+                                                    "Admit",
 
-                                                formatted.push(
-                                                    {
-                                                        _id:
-                                                            `${admit._id}-${index}`,
+                                                admitId:
+                                                    admit._id,
 
-                                                        admitId:
-                                                            admit._id,
+                                                testIndex:
+                                                    index,
 
-                                                        testIndex:
-                                                            index,
+                                                patient:
+                                                    admit.patient || {},
 
-                                                        patient:
-                                                            admit.patient,
+                                                room:
+                                                    admit.room || {},
 
-                                                        room:
-                                                            admit.room,
+                                                status:
+                                                    test.status ||
+                                                    "Pending",
 
-                                                        status:
-                                                            test.status ||
-                                                            "Pending",
+                                                reportPdf:
+                                                    test.reportPdf ||
+                                                    "",
 
-                                                        reportPdf:
-                                                            test.reportPdf ||
-                                                            "",
+                                                totalAmount:
+                                                    test.price || 0,
 
-                                                        totalAmount:
-                                                            test.price,
-
-                                                        tests:
-                                                            [
-                                                                {
-                                                                    name:
-                                                                        test.testName,
-                                                                },
-                                                            ],
-                                                    }
-                                                );
+                                                tests:
+                                                    [
+                                                        {
+                                                            name:
+                                                                test.testName,
+                                                        },
+                                                    ],
                                             }
-                                        }
-                                    );
-                                }
+                                        );
+                                    }
+                                );
                             }
                         );
 
-                        setTests(
-                            formatted
-                        );
+                        allTests = [
+                            ...allTests,
+                            ...admitTests,
+                        ];
                     }
+
+                    // =====================================
+                    // ONLY PENDING & PROCESSING
+                    // =====================================
+
+                    allTests =
+                        allTests.filter(
+                            (
+                                item
+                            ) =>
+                                item.status ===
+                                    "Pending" ||
+                                item.status ===
+                                    "Processing"
+                        );
+
+                    setTests(
+                        allTests
+                    );
 
                 } catch (
                     error
@@ -166,41 +240,85 @@ const TestRequestion =
 
         const updateStatus =
             async (
-                admitId,
-                index,
+                item,
                 status
             ) => {
 
                 try {
 
-                    const formData =
-                        new FormData();
-
-                    formData.append(
-                        "status",
-                        status
-                    );
-
-                    const response =
-                        await fetch(
-                            `http://127.0.0.1:3000/api/v1/admit-requests/lab-test/${admitId}/${index}`,
-                            {
-                                method:
-                                    "PATCH",
-
-                                body:
-                                    formData,
-                            }
-                        );
-
-                    const result =
-                        await response.json();
+                    // ADMIT TEST
 
                     if (
-                        result.success
+                        item.type ===
+                        "Admit"
                     ) {
 
-                        fetchTests();
+                        const formData =
+                            new FormData();
+
+                        formData.append(
+                            "status",
+                            status
+                        );
+
+                        const response =
+                            await fetch(
+                                `http://127.0.0.1:3000/api/v1/admit-requests/lab-test/${item.admitId}/${item.testIndex}`,
+                                {
+                                    method:
+                                        "PATCH",
+
+                                    body:
+                                        formData,
+                                }
+                            );
+
+                        const result =
+                            await response.json();
+
+                        if (
+                            result.success
+                        ) {
+
+                            fetchTests();
+                        }
+                    }
+
+                    // NORMAL TEST
+
+                    else {
+
+                        const response =
+                            await fetch(
+                                `http://127.0.0.1:3000/api/v1/lab-tests/${item._id}`,
+                                {
+                                    method:
+                                        "PATCH",
+
+                                    headers:
+                                    {
+                                        "Content-Type":
+                                            "application/json",
+                                    },
+
+                                    body:
+                                        JSON.stringify(
+                                            {
+                                                status,
+                                            }
+                                        ),
+                                }
+                            );
+
+                        const result =
+                            await response.json();
+
+                        if (
+                            result.success
+                        ) {
+
+                            fetchTests();
+                        }
                     }
 
                 } catch (
@@ -241,47 +359,107 @@ const TestRequestion =
                         "Completed"
                     );
 
-                    formData.append(
-                        "reportPdf",
-                        report
-                    );
-
-                    const response =
-                        await fetch(
-                            `http://127.0.0.1:3000/api/v1/admit-requests/lab-test/${selectedTest.admitId}/${selectedTest.testIndex}`,
-                            {
-                                method:
-                                    "PATCH",
-
-                                body:
-                                    formData,
-                            }
-                        );
-
-                    const result =
-                        await response.json();
+                    // =====================================
+                    // ADMIT TEST
+                    // =====================================
 
                     if (
-                        result.success
+                        selectedTest.type ===
+                        "Admit"
                     ) {
 
-                        alert(
-                            "Report Uploaded"
+                        formData.append(
+                            "reportPdf",
+                            report
                         );
 
-                        setShowModal(
-                            false
+                        const response =
+                            await fetch(
+                                `http://127.0.0.1:3000/api/v1/admit-requests/lab-test/${selectedTest.admitId}/${selectedTest.testIndex}`,
+                                {
+                                    method:
+                                        "PATCH",
+
+                                    body:
+                                        formData,
+                                }
+                            );
+
+                        const result =
+                            await response.json();
+
+                        if (
+                            result.success
+                        ) {
+
+                            alert(
+                                "Report Uploaded"
+                            );
+
+                            setShowModal(
+                                false
+                            );
+
+                            setReport(
+                                null
+                            );
+
+                            setSelectedTest(
+                                null
+                            );
+
+                            fetchTests();
+                        }
+                    }
+
+                    // =====================================
+                    // NORMAL TEST
+                    // =====================================
+
+                    else {
+
+                        formData.append(
+                            "report",
+                            report
                         );
 
-                        setReport(
-                            null
-                        );
+                        const response =
+                            await fetch(
+                                `http://127.0.0.1:3000/api/v1/lab-tests/complete/${selectedTest._id}`,
+                                {
+                                    method:
+                                        "PATCH",
 
-                        setSelectedTest(
-                            null
-                        );
+                                    body:
+                                        formData,
+                                }
+                            );
 
-                        fetchTests();
+                        const result =
+                            await response.json();
+
+                        if (
+                            result.success
+                        ) {
+
+                            alert(
+                                "Report Uploaded"
+                            );
+
+                            setShowModal(
+                                false
+                            );
+
+                            setReport(
+                                null
+                            );
+
+                            setSelectedTest(
+                                null
+                            );
+
+                            fetchTests();
+                        }
                     }
 
                 } catch (
@@ -298,7 +476,9 @@ const TestRequestion =
         // LOADING
         // =====================================
 
-        if (loading) {
+        if (
+            loading
+        ) {
 
             return (
                 <div className="min-h-screen flex justify-center items-center text-3xl font-black text-blue-600">
@@ -310,18 +490,23 @@ const TestRequestion =
         return (
             <div className="min-h-screen bg-blue-50 p-5">
 
+                {/* HEADER */}
+
                 <div className="mb-6">
 
                     <h2 className="text-4xl font-black text-slate-800 mb-2">
-                        Laboratory
-                        Tests
+                        Laboratory Tests
                     </h2>
 
                     <p className="text-slate-500">
-                        Admitted patient
-                        laboratory requests
+                        Pending &
+                        Processing
+                        laboratory
+                        requests
                     </p>
                 </div>
+
+                {/* TABLE */}
 
                 <div className="bg-white rounded-[30px] overflow-hidden border border-blue-100">
 
@@ -335,6 +520,10 @@ const TestRequestion =
 
                                     <th className="px-5 py-4 text-left">
                                         Patient
+                                    </th>
+
+                                    <th className="px-5 py-4 text-left">
+                                        Type
                                     </th>
 
                                     <th className="px-5 py-4 text-left">
@@ -381,6 +570,8 @@ const TestRequestion =
                                                 }`}
                                             >
 
+                                                {/* PATIENT */}
+
                                                 <td className="px-5 py-5">
 
                                                     <div>
@@ -405,23 +596,48 @@ const TestRequestion =
                                                     </div>
                                                 </td>
 
+                                                {/* TYPE */}
+
+                                                <td className="px-5 py-5">
+
+                                                    <span
+                                                        className={`px-4 py-2 rounded-2xl text-sm font-black ${
+                                                            item.type ===
+                                                            "Admit"
+                                                                ? "bg-blue-100 text-blue-600"
+                                                                : "bg-green-100 text-green-600"
+                                                        }`}
+                                                    >
+                                                        {
+                                                            item.type
+                                                        }
+                                                    </span>
+                                                </td>
+
+                                                {/* ROOM */}
+
                                                 <td className="px-5 py-5 font-bold">
 
                                                     {
                                                         item
                                                             ?.room
-                                                            ?.roomNumber
+                                                            ?.roomNumber ||
+                                                        "N/A"
                                                     }
                                                 </td>
+
+                                                {/* TEST */}
 
                                                 <td className="px-5 py-5">
 
                                                     {
                                                         item
-                                                            ?.tests[0]
+                                                            ?.tests?.[0]
                                                             ?.name
                                                     }
                                                 </td>
+
+                                                {/* AMOUNT */}
 
                                                 <td className="px-5 py-5 font-black">
 
@@ -431,6 +647,8 @@ const TestRequestion =
                                                     }
                                                 </td>
 
+                                                {/* STATUS */}
+
                                                 <td className="px-5 py-5">
 
                                                     <span
@@ -438,10 +656,7 @@ const TestRequestion =
                                                             item.status ===
                                                             "Pending"
                                                                 ? "bg-yellow-100 text-yellow-600"
-                                                                : item.status ===
-                                                                  "Processing"
-                                                                ? "bg-blue-100 text-blue-600"
-                                                                : "bg-green-100 text-green-600"
+                                                                : "bg-blue-100 text-blue-600"
                                                         }`}
                                                     >
                                                         {
@@ -449,6 +664,8 @@ const TestRequestion =
                                                         }
                                                     </span>
                                                 </td>
+
+                                                {/* ACTION */}
 
                                                 <td className="px-5 py-5">
 
@@ -459,8 +676,7 @@ const TestRequestion =
                                                             <button
                                                                 onClick={() =>
                                                                     updateStatus(
-                                                                        item.admitId,
-                                                                        item.testIndex,
+                                                                        item,
                                                                         "Processing"
                                                                     )
                                                                 }
@@ -502,30 +718,9 @@ const TestRequestion =
                                                                     }
                                                                 />
 
-                                                                Upload Report
+                                                                Upload
+                                                                Report
                                                             </button>
-                                                        )
-                                                    }
-
-                                                    {
-                                                        item.status ===
-                                                        "Completed" && (
-
-                                                            <a
-                                                                href={`http://127.0.0.1:3000${item.reportPdf}`}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="text-blue-600 font-black flex items-center gap-2"
-                                                            >
-
-                                                                <FileText
-                                                                    size={
-                                                                        18
-                                                                    }
-                                                                />
-
-                                                                View PDF
-                                                            </a>
                                                         )
                                                     }
                                                 </td>

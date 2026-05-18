@@ -140,6 +140,7 @@ const addMedicine =
         return admit;
     };
 
+
 // ADD TEST REQUEST
 
 const addTestRequest =
@@ -160,8 +161,40 @@ const addTestRequest =
             );
         }
 
-        admit.testRequests?.push(
-            ...tests
+        tests.forEach(
+            (
+                test
+            ) => {
+
+                admit.testRequests?.push(
+                    {
+                        testName:
+                            test.testName,
+
+                        price:
+                            test.price,
+
+                        note:
+                            test.note || "",
+
+                        isSent:
+                            true,
+
+                        status:
+                            "Pending",
+
+                        report:
+                            "",
+
+                        reportPdf:
+                            "",
+                    }
+                );
+            }
+        );
+
+        admit.markModified(
+            "testRequests"
         );
 
         await admit.save();
@@ -442,6 +475,39 @@ const confirmBill =
         return admit;
     };
 
+    // GET DOCTOR REQUESTS
+
+const getDoctorAdmitRequests =
+    async (
+        doctorId: string
+    ) => {
+
+        return await AdmitRequest.find({
+            doctor:
+                doctorId,
+        })
+            .populate({
+                path: "patient",
+
+                populate: {
+                    path: "user",
+                },
+            })
+            .populate({
+                path: "doctor",
+
+                populate: {
+                    path: "user",
+                },
+            })
+            .populate(
+                "room"
+            )
+            .sort({
+                createdAt: -1,
+            });
+    };
+
 export const AdmitRequestServices =
 {
     createAdmitRequest,
@@ -461,4 +527,5 @@ export const AdmitRequestServices =
     releasePatient,
 
     confirmBill,
+    getDoctorAdmitRequests,
 };

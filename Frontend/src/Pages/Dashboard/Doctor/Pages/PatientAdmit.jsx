@@ -78,9 +78,18 @@ const PatientAdmit = () => {
 
         fetchAppointments();
 
-        fetchRequests();
-
     }, []);
+
+    useEffect(() => {
+
+        if (
+            appointments.length > 0
+        ) {
+
+            fetchRequests();
+        }
+
+    }, [appointments]);
 
     // =====================================
     // FETCH APPOINTMENTS
@@ -139,7 +148,7 @@ const PatientAdmit = () => {
                 }
 
             } catch (
-                error
+            error
             ) {
 
                 console.log(
@@ -163,9 +172,16 @@ const PatientAdmit = () => {
 
             try {
 
+                if (
+                    !appointments?.[0]?.doctor
+                ) {
+
+                    return;
+                }
+
                 const response =
                     await fetch(
-                        `http://127.0.0.1:3000/api/v1/admit-requests/doctor/${user?._id}`
+                        `http://127.0.0.1:3000/api/v1/admit-requests/doctor/${appointments?.[0]?.doctor}`
                     );
 
                 const result =
@@ -181,7 +197,7 @@ const PatientAdmit = () => {
                 }
 
             } catch (
-                error
+            error
             ) {
 
                 console.log(
@@ -308,7 +324,7 @@ const PatientAdmit = () => {
                 }
 
             } catch (
-                error
+            error
             ) {
 
                 console.log(
@@ -420,12 +436,11 @@ const PatientAdmit = () => {
                                                     item
                                                 )
                                             }
-                                            className={`border rounded-[30px] p-6 cursor-pointer transition ${
-                                                selectedPatient?._id ===
-                                                item?._id
+                                            className={`border rounded-[30px] p-6 cursor-pointer transition ${selectedPatient?._id ===
+                                                    item?._id
                                                     ? "border-blue-600 bg-blue-50"
                                                     : "border-blue-100 hover:border-blue-300"
-                                            }`}
+                                                }`}
                                         >
 
                                             <div className="flex items-center justify-between mb-4">
@@ -799,15 +814,14 @@ const PatientAdmit = () => {
                                                         <td className="py-5 px-4">
 
                                                             <span
-                                                                className={`px-4 py-2 rounded-2xl text-sm font-bold ${
-                                                                    item?.status ===
-                                                                    "Pending"
+                                                                className={`px-4 py-2 rounded-2xl text-sm font-bold ${item?.status ===
+                                                                        "Pending"
                                                                         ? "bg-yellow-100 text-yellow-700"
                                                                         : item?.status ===
-                                                                          "Admitted"
-                                                                        ? "bg-green-100 text-green-700"
-                                                                        : "bg-red-100 text-red-700"
-                                                                }`}
+                                                                            "Admitted"
+                                                                            ? "bg-green-100 text-green-700"
+                                                                            : "bg-red-100 text-red-700"
+                                                                    }`}
                                                             >
                                                                 {
                                                                     item?.status

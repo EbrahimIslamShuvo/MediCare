@@ -13,29 +13,44 @@ import {
     Download,
     TrendingUp,
     Calendar,
+    BedDouble,
 } from "lucide-react";
 
 const Reports = () => {
+
     // =====================================
     // STATES
     // =====================================
 
-    const [patients, setPatients] =
-        useState([]);
+    const [
+        patients,
+        setPatients,
+    ] = useState([]);
 
-    const [doctors, setDoctors] =
-        useState([]);
+    const [
+        doctors,
+        setDoctors,
+    ] = useState([]);
 
     const [
         appointments,
         setAppointments,
     ] = useState([]);
 
-    const [labTests, setLabTests] =
-        useState([]);
+    const [
+        labTests,
+        setLabTests,
+    ] = useState([]);
 
-    const [loading, setLoading] =
-        useState(true);
+    const [
+        admitRequests,
+        setAdmitRequests,
+    ] = useState([]);
+
+    const [
+        loading,
+        setLoading,
+    ] = useState(true);
 
     const [
         selectedYear,
@@ -56,13 +71,19 @@ const Reports = () => {
     // =====================================
 
     useEffect(() => {
+
         fetchAllData();
+
     }, []);
 
     const fetchAllData =
         async () => {
+
             try {
-                setLoading(true);
+
+                setLoading(
+                    true
+                );
 
                 // PATIENTS
 
@@ -77,6 +98,7 @@ const Reports = () => {
                 if (
                     patientData.success
                 ) {
+
                     setPatients(
                         patientData.data
                     );
@@ -95,6 +117,7 @@ const Reports = () => {
                 if (
                     doctorData.success
                 ) {
+
                     setDoctors(
                         doctorData.data
                     );
@@ -113,6 +136,7 @@ const Reports = () => {
                 if (
                     appointmentData.success
                 ) {
+
                     setAppointments(
                         appointmentData.data
                     );
@@ -131,18 +155,44 @@ const Reports = () => {
                 if (
                     labData.success
                 ) {
+
                     setLabTests(
                         labData.data
                     );
                 }
+
+                // ADMIT REQUESTS
+
+                const admitRes =
+                    await fetch(
+                        "http://127.0.0.1:3000/api/v1/admit-requests"
+                    );
+
+                const admitData =
+                    await admitRes.json();
+
+                if (
+                    admitData.success
+                ) {
+
+                    setAdmitRequests(
+                        admitData.data
+                    );
+                }
+
             } catch (
                 error
             ) {
+
                 console.log(
                     error
                 );
+
             } finally {
-                setLoading(false);
+
+                setLoading(
+                    false
+                );
             }
         };
 
@@ -150,7 +200,8 @@ const Reports = () => {
     // DATE HELPERS
     // =====================================
 
-    const today = new Date();
+    const today =
+        new Date();
 
     const last7Days =
         new Date();
@@ -172,7 +223,9 @@ const Reports = () => {
 
     const patient7Days =
         patients.filter(
-            (item) =>
+            (
+                item
+            ) =>
                 new Date(
                     item.createdAt
                 ) >= last7Days
@@ -180,7 +233,9 @@ const Reports = () => {
 
     const patient30Days =
         patients.filter(
-            (item) =>
+            (
+                item
+            ) =>
                 new Date(
                     item.createdAt
                 ) >= last30Days
@@ -193,7 +248,9 @@ const Reports = () => {
     const appointmentSales =
         appointments
             .filter(
-                (item) =>
+                (
+                    item
+                ) =>
                     item.paymentStatus ===
                     "Paid"
             )
@@ -203,16 +260,22 @@ const Reports = () => {
                     item
                 ) =>
                     total +
-                    (item?.doctor
-                        ?.consultationFee ||
-                        0),
+                    (
+                        item
+                            ?.doctor
+                            ?.consultationFee ||
+                        0
+                    ),
+
                 0
             );
 
     const labSales =
         labTests
             .filter(
-                (item) =>
+                (
+                    item
+                ) =>
                     item.paymentStatus ===
                     "Paid"
             )
@@ -222,14 +285,33 @@ const Reports = () => {
                     item
                 ) =>
                     total +
-                    (item.totalAmount ||
-                        0),
+                    (
+                        item.totalAmount ||
+                        0
+                    ),
+
                 0
             );
 
+    const admitSales =
+        admitRequests.reduce(
+            (
+                total,
+                item
+            ) =>
+                total +
+                (
+                    item.totalBill ||
+                    0
+                ),
+
+            0
+        );
+
     const totalSales =
         appointmentSales +
-        labSales;
+        labSales +
+        admitSales;
 
     // =====================================
     // MONTHLY DATA
@@ -237,7 +319,10 @@ const Reports = () => {
 
     const monthlyAppointments =
         appointments.filter(
-            (item) => {
+            (
+                item
+            ) => {
+
                 const date =
                     new Date(
                         item.createdAt
@@ -248,8 +333,8 @@ const Reports = () => {
                         Number(
                             selectedYear
                         ) &&
-                    date.getMonth() +
-                        1 ===
+
+                    date.getMonth() + 1 ===
                         Number(
                             selectedMonth
                         )
@@ -259,7 +344,10 @@ const Reports = () => {
 
     const monthlyLabTests =
         labTests.filter(
-            (item) => {
+            (
+                item
+            ) => {
+
                 const date =
                     new Date(
                         item.createdAt
@@ -270,8 +358,8 @@ const Reports = () => {
                         Number(
                             selectedYear
                         ) &&
-                    date.getMonth() +
-                        1 ===
+
+                    date.getMonth() + 1 ===
                         Number(
                             selectedMonth
                         )
@@ -281,7 +369,10 @@ const Reports = () => {
 
     const monthlyPatients =
         patients.filter(
-            (item) => {
+            (
+                item
+            ) => {
+
                 const date =
                     new Date(
                         item.createdAt
@@ -292,8 +383,8 @@ const Reports = () => {
                         Number(
                             selectedYear
                         ) &&
-                    date.getMonth() +
-                        1 ===
+
+                    date.getMonth() + 1 ===
                         Number(
                             selectedMonth
                         )
@@ -303,7 +394,10 @@ const Reports = () => {
 
     const monthlyDoctors =
         doctors.filter(
-            (item) => {
+            (
+                item
+            ) => {
+
                 const date =
                     new Date(
                         item.createdAt
@@ -319,13 +413,77 @@ const Reports = () => {
         );
 
     // =====================================
-    // SALES
+    // MONTHLY ADMITS
+    // =====================================
+
+    const monthlyAdmits =
+        admitRequests.filter(
+            (
+                item
+            ) => {
+
+                const date =
+                    new Date(
+                        item.createdAt
+                    );
+
+                return (
+                    date.getFullYear() ===
+                        Number(
+                            selectedYear
+                        ) &&
+
+                    date.getMonth() + 1 ===
+                        Number(
+                            selectedMonth
+                        )
+                );
+            }
+        );
+
+    const releasedPatients =
+        monthlyAdmits.filter(
+            (
+                item
+            ) =>
+                item.status ===
+                "Released"
+        ).length;
+
+    const admittedPatients =
+        monthlyAdmits.filter(
+            (
+                item
+            ) =>
+                item.status ===
+                "Admitted"
+        ).length;
+
+    const monthlyAdmitSales =
+        monthlyAdmits.reduce(
+            (
+                total,
+                item
+            ) =>
+                total +
+                (
+                    item.totalBill ||
+                    0
+                ),
+
+            0
+        );
+
+    // =====================================
+    // MONTHLY SALES
     // =====================================
 
     const monthlyAppointmentSales =
         monthlyAppointments
             .filter(
-                (item) =>
+                (
+                    item
+                ) =>
                     item.paymentStatus ===
                     "Paid"
             )
@@ -335,16 +493,22 @@ const Reports = () => {
                     item
                 ) =>
                     total +
-                    (item?.doctor
-                        ?.consultationFee ||
-                        0),
+                    (
+                        item
+                            ?.doctor
+                            ?.consultationFee ||
+                        0
+                    ),
+
                 0
             );
 
     const monthlyLabSales =
         monthlyLabTests
             .filter(
-                (item) =>
+                (
+                    item
+                ) =>
                     item.paymentStatus ===
                     "Paid"
             )
@@ -354,14 +518,18 @@ const Reports = () => {
                     item
                 ) =>
                     total +
-                    (item.totalAmount ||
-                        0),
+                    (
+                        item.totalAmount ||
+                        0
+                    ),
+
                 0
             );
 
     const monthlySales =
         monthlyAppointmentSales +
-        monthlyLabSales;
+        monthlyLabSales +
+        monthlyAdmitSales;
 
     // =====================================
     // PAID COUNTS
@@ -369,14 +537,18 @@ const Reports = () => {
 
     const paidAppointments =
         monthlyAppointments.filter(
-            (item) =>
+            (
+                item
+            ) =>
                 item.paymentStatus ===
                 "Paid"
         ).length;
 
     const paidLabTests =
         monthlyLabTests.filter(
-            (item) =>
+            (
+                item
+            ) =>
                 item.paymentStatus ===
                 "Paid"
         ).length;
@@ -387,10 +559,9 @@ const Reports = () => {
 
     const downloadReport =
         () => {
+
             const doc =
                 new jsPDF();
-
-            // TITLE
 
             doc.setFontSize(
                 24
@@ -402,8 +573,6 @@ const Reports = () => {
                 20
             );
 
-            // MONTH
-
             doc.setFontSize(
                 14
             );
@@ -414,16 +583,12 @@ const Reports = () => {
                 35
             );
 
-            // LINE
-
             doc.line(
                 20,
                 42,
                 190,
                 42
             );
-
-            // BODY
 
             doc.setFontSize(
                 16
@@ -478,24 +643,28 @@ const Reports = () => {
             );
 
             doc.text(
-                `Total Monthly Sales: Tk ${monthlySales}`,
+                `Admit Patients: ${monthlyAdmits.length}`,
                 20,
                 180
             );
 
-            // FOOTER
-
-            doc.setFontSize(
-                18
+            doc.text(
+                `Released Patients: ${releasedPatients}`,
+                20,
+                195
             );
 
             doc.text(
-                "Generated Hospital Analytics Report",
+                `Admit Sales: Tk ${monthlyAdmitSales}`,
                 20,
                 210
             );
 
-            // SAVE
+            doc.text(
+                `Total Monthly Sales: Tk ${monthlySales}`,
+                20,
+                225
+            );
 
             doc.save(
                 `Hospital-Report-${selectedMonth}-${selectedYear}.pdf`
@@ -506,7 +675,10 @@ const Reports = () => {
     // LOADING
     // =====================================
 
-    if (loading) {
+    if (
+        loading
+    ) {
+
         return (
             <div className="min-h-screen flex justify-center items-center text-3xl font-black text-blue-600">
                 Loading...
@@ -516,25 +688,27 @@ const Reports = () => {
 
     return (
         <div className="min-h-screen bg-blue-50 p-6">
+
             {/* HEADER */}
 
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+
                 <div>
+
                     <h2 className="text-4xl font-black text-slate-800 mb-2">
                         Reports &
                         Analytics
                     </h2>
 
                     <p className="text-slate-500 text-lg">
-                        Hospital
-                        statistics and
-                        reports
+                        Hospital statistics and reports
                     </p>
                 </div>
 
                 {/* FILTER */}
 
                 <div className="flex flex-col md:flex-row gap-4">
+
                     {/* YEAR */}
 
                     <select
@@ -545,12 +719,12 @@ const Reports = () => {
                             e
                         ) =>
                             setSelectedYear(
-                                e.target
-                                    .value
+                                e.target.value
                             )
                         }
                         className="h-14 px-5 rounded-2xl border border-blue-100 outline-none bg-white"
                     >
+
                         <option>
                             2025
                         </option>
@@ -574,12 +748,12 @@ const Reports = () => {
                             e
                         ) =>
                             setSelectedMonth(
-                                e.target
-                                    .value
+                                e.target.value
                             )
                         }
                         className="h-14 px-5 rounded-2xl border border-blue-100 outline-none bg-white"
                     >
+
                         <option value="1">
                             January
                         </option>
@@ -637,6 +811,7 @@ const Reports = () => {
                         }
                         className="h-14 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black flex items-center gap-3"
                     >
+
                         <Download
                             size={20}
                         />
@@ -648,7 +823,8 @@ const Reports = () => {
 
             {/* TOP CARDS */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
+
                 <StatsCard
                     title="Total Patients"
                     value={
@@ -698,17 +874,31 @@ const Reports = () => {
                         />
                     }
                 />
+
+                <StatsCard
+                    title="Admit Patients"
+                    value={
+                        admitRequests.length
+                    }
+                    extra={`${releasedPatients} released`}
+                    icon={
+                        <BedDouble
+                            size={30}
+                        />
+                    }
+                />
             </div>
 
             {/* MONTHLY ANALYTICS */}
 
             <div className="bg-white rounded-[35px] border border-blue-100 p-8 shadow-sm">
+
                 <h2 className="text-3xl font-black text-slate-800 mb-8">
-                    Monthly
-                    Analytics
+                    Monthly Analytics
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
                     <AnalyticsCard
                         title="Patients"
                         value={
@@ -752,6 +942,27 @@ const Reports = () => {
                     />
 
                     <AnalyticsCard
+                        title="Admit Patients"
+                        value={
+                            monthlyAdmits.length
+                        }
+                    />
+
+                    <AnalyticsCard
+                        title="Released Patients"
+                        value={
+                            releasedPatients
+                        }
+                    />
+
+                    <AnalyticsCard
+                        title="Admitted Patients"
+                        value={
+                            admittedPatients
+                        }
+                    />
+
+                    <AnalyticsCard
                         title="Appointment Sales"
                         value={`Tk ${monthlyAppointmentSales}`}
                     />
@@ -759,6 +970,11 @@ const Reports = () => {
                     <AnalyticsCard
                         title="Lab Test Sales"
                         value={`Tk ${monthlyLabSales}`}
+                    />
+
+                    <AnalyticsCard
+                        title="Admit Sales"
+                        value={`Tk ${monthlyAdmitSales}`}
                     />
 
                     <AnalyticsCard
@@ -781,10 +997,15 @@ const StatsCard = ({
     extra,
     icon,
 }) => {
+
     return (
         <div className="bg-white rounded-[35px] border border-blue-100 p-7 shadow-sm">
+
             <div className="w-16 h-16 rounded-[22px] bg-blue-100 text-blue-600 flex items-center justify-center mb-5">
-                {icon}
+
+                {
+                    icon
+                }
             </div>
 
             <h3 className="text-slate-500 font-semibold mb-2">
@@ -796,6 +1017,7 @@ const StatsCard = ({
             </h2>
 
             <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
+
                 <TrendingUp
                     size={16}
                 />
@@ -814,9 +1036,12 @@ const AnalyticsCard = ({
     title,
     value,
 }) => {
+
     return (
         <div className="bg-blue-50 rounded-[30px] p-7">
+
             <div className="flex items-center gap-3 mb-4 text-blue-600">
+
                 <Calendar
                     size={22}
                 />

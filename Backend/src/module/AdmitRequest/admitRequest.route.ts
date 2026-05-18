@@ -27,6 +27,13 @@ router.get(
     AdmitRequestControllers.getAllAdmitRequests
 );
 
+// GET DOCTOR REQUESTS
+
+router.get(
+    "/doctor/:id",
+    AdmitRequestControllers.getDoctorAdmitRequests
+);
+
 // ADMIT
 
 router.patch(

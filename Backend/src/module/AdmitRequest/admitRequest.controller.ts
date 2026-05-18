@@ -317,6 +317,38 @@ const confirmBill =
         }
     };
 
+    // GET DOCTOR REQUESTS
+
+const getDoctorAdmitRequests =
+    async (
+        req: Request,
+        res: Response
+    ) => {
+
+        try {
+
+            const result =
+                await AdmitRequestServices.getDoctorAdmitRequests(
+                    req.params.id as string
+                );
+
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+
+        } catch (
+            error: any
+        ) {
+
+            res.status(400).json({
+                success: false,
+                message:
+                    error.message,
+            });
+        }
+    };
+
 export const AdmitRequestControllers =
 {
     createAdmitRequest,
@@ -336,4 +368,6 @@ export const AdmitRequestControllers =
     releasePatient,
 
     confirmBill,
+
+    getDoctorAdmitRequests
 };
