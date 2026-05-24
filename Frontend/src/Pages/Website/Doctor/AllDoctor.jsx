@@ -7,6 +7,7 @@ import {
   Search,
   Stethoscope,
 } from "lucide-react";
+
 import DoctorCCard from "../../../Component/DoctorCard/DoctorCCard";
 
 const AllDoctor = () => {
@@ -27,6 +28,14 @@ const AllDoctor = () => {
     specialization,
     setSpecialization,
   ] = useState("");
+
+  // =====================================
+  // GET USER
+  // =====================================
+
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
 
   // =====================================
   // FETCH DOCTORS
@@ -115,6 +124,20 @@ const AllDoctor = () => {
   return (
     <div className="min-h-screen bg-blue-50 py-12 px-5">
       <div className="max-w-7xl mx-auto">
+        {/* ================================= */}
+        {/* MARQUEE */}
+        {/* ================================= */}
+
+        {(!user ||
+          user?.role !==
+            "patient") && (
+          <marquee className="bg-red-500 text-white py-3 px-5 rounded-2xl font-semibold mb-8">
+            You have to login
+            first as patient to
+            book appointments.
+          </marquee>
+        )}
+
         {/* ================================= */}
         {/* TOP */}
         {/* ================================= */}

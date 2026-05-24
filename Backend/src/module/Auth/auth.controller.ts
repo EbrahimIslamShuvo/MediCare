@@ -7,9 +7,9 @@ import { AuthServices } from "./auth.service";
 
 import generateToken from "../../utils/generateToken";
 
-// ======================================
-// REGISTER
-// ======================================
+
+// ================REGISTER=============
+
 
 const register = async (
   req: Request,

@@ -13,6 +13,7 @@ import {
     Stethoscope,
     Users,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const Home = () => {
     // =====================================
@@ -110,7 +111,7 @@ const Home = () => {
                         </p>
 
                         <div className="flex flex-wrap gap-5">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-3xl font-black transition duration-300 flex items-center gap-3 shadow-2xl shadow-blue-500/30">
+                            <NavLink to={"/doctor"} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-3xl font-black transition duration-300 flex items-center gap-3 shadow-2xl shadow-blue-500/30">
                                 Book Appointment
 
                                 <ArrowRight
@@ -118,11 +119,11 @@ const Home = () => {
                                         20
                                     }
                                 />
-                            </button>
+                            </NavLink>
 
-                            <button className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white px-8 py-4 rounded-3xl font-black transition duration-300">
+                            <NavLink to={"/about"} className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white px-8 py-4 rounded-3xl font-black transition duration-300">
                                 Learn More
-                            </button>
+                            </NavLink>
                         </div>
                     </div>
                 </div>
@@ -179,7 +180,7 @@ const Home = () => {
                                     <FeatureItem text="Instant Confirmation" />
                                 </div>
 
-                                <button className="group-hover:bg-blue-700 bg-blue-600 text-white px-7 py-4 rounded-3xl font-black flex items-center gap-3 transition duration-300 shadow-lg shadow-blue-200">
+                                <NavLink to={"/doctor"} className="group-hover:bg-blue-700 bg-blue-600 text-white max-w-fit px-7 py-4 rounded-3xl font-black flex items-center gap-3 transition duration-300 shadow-lg shadow-blue-200">
                                     Book Now
 
                                     <ArrowRight
@@ -187,7 +188,7 @@ const Home = () => {
                                             20
                                         }
                                     />
-                                </button>
+                                </NavLink>
                             </div>
                         </div>
                     </div>
@@ -236,7 +237,7 @@ const Home = () => {
                                     <FeatureItem text="Trained Staff" />
                                 </div>
 
-                                <button className="group-hover:bg-red-600 bg-red-500 text-white px-7 py-4 rounded-3xl font-black flex items-center gap-3 transition duration-300 shadow-lg shadow-red-200">
+                                <NavLink to={"/dashboard/patient/ambulance"} className="group-hover:bg-red-600 max-w-fit bg-red-500 text-white px-7 py-4 rounded-3xl font-black flex items-center gap-3 transition duration-300 shadow-lg shadow-red-200">
                                     Request Now
 
                                     <ArrowRight
@@ -244,7 +245,7 @@ const Home = () => {
                                             20
                                         }
                                     />
-                                </button>
+                                </NavLink>
                             </div>
                         </div>
                     </div>
@@ -294,7 +295,7 @@ const Home = () => {
                                     <FeatureItem text="Fast Results" />
                                 </div>
 
-                                <button className="group-hover:bg-emerald-600 bg-emerald-500 text-white px-7 py-4 rounded-3xl font-black flex items-center gap-3 transition duration-300 shadow-lg shadow-emerald-200">
+                                <NavLink to={"/dashboard/patient/lab-reports"} className="group-hover:bg-emerald-600 max-w-fit bg-emerald-500 text-white px-7 py-4 rounded-3xl font-black flex items-center gap-3 transition duration-300 shadow-lg shadow-emerald-200">
                                     Book Test
 
                                     <ArrowRight
@@ -302,7 +303,7 @@ const Home = () => {
                                             20
                                         }
                                     />
-                                </button>
+                                </NavLink>
                             </div>
                         </div>
                     </div>
@@ -525,7 +526,7 @@ const DoctorCard = ({
     doctor,
 }) => {
     return (
-        <div className="bg-[#f7fbff] border border-blue-100 rounded-[40px] overflow-hidden shadow-sm hover:-translate-y-2 transition duration-500 hover:shadow-xl hover:shadow-blue-100">
+        <NavLink to={`/doctor/${doctor._id}`} className="bg-[#f7fbff] border border-blue-100 rounded-[40px] overflow-hidden shadow-sm hover:-translate-y-2 transition duration-500 hover:shadow-xl hover:shadow-blue-100">
             <img
                 src={`http://127.0.0.1:3000${doctor?.image}`}
                 alt={
@@ -558,7 +559,7 @@ const DoctorCard = ({
                     Consultation
                 </p>
             </div>
-        </div>
+        </NavLink>
     );
 };
 

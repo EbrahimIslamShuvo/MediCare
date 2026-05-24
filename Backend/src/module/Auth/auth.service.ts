@@ -106,7 +106,7 @@ const sendAccountMail =
           </div>
 
           <p>
-            Please login and change your password.
+            Please login.
           </p>
 
         </div>
